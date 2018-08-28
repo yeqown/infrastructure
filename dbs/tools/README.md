@@ -1,9 +1,9 @@
 package dbs
 
-TODO:
-	a tool to generate Model struct to service Struct
-	like convert UserModel to UserService
+### 目标:
+a tool to generate Model struct to service Struct like convert UserModel to UserService
 
+```Golang
 type UserModel struct {
 	Name     string `gorm:"column:name"`
 	Password string `gorm:"column:password"`
@@ -13,6 +13,7 @@ type UserService struct {
 	Name     string `json:"name"`
 	Password string `json:"password"`
 }
+```
 
 ### 使用方法
 
@@ -126,7 +127,7 @@ func LoadUserFromModel(data *testdata.UserModel) *User {
 func main() {
 	// set custom funcs
 	tools.SetCustomGenTagFunc(CustomGenerateTagFunc)
-      tools.SetCustomParseTagFunc(CustomParseTagFunc)
+	tools.SetCustomParseTagFunc(CustomParseTagFunc)
 }
 
 // CustomParseTagFunc to custom implment yourself parseTagFunc
