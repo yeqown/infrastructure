@@ -55,7 +55,8 @@ go build -o dbtools tool.main.go
 # 根据./dbs/tools/testdata目录下的type_model.go生成文件，
 # 在./dbs/tools/testdata目录下生成文件，
 # 指定包名为testdata
-dbtools -dir=./dbs/tools/testdata -filename=type_model.go -generatePkgName=testdata -generateDir=./dbs/tools/testdata -modelImportPath=model
+dbtools -dir=./dbs/tools/testdata -filename=type_model.go -generatePkgName=testdata 
+-generateDir=./dbs/tools/testdata -modelImportPath=model
 ```
 
 ```golang
