@@ -17,6 +17,16 @@ func TestNewCodeInfo(t *testing.T) {
 		want *CodeInfo
 	}{
 		// TODO: Add test cases.
+		{
+			name: "case1",
+			args: args{code: CodeOk, message: "成功"},
+			want: &CodeInfo{CodeOk, "成功"},
+		},
+		{
+			name: "case2",
+			args: args{code: CodeOk, message: ""},
+			want: &CodeInfo{CodeOk, messages[CodeOk]},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -37,6 +47,11 @@ func TestGetCodeInfo(t *testing.T) {
 		want *CodeInfo
 	}{
 		// TODO: Add test cases.
+		{
+			name: "case1",
+			args: args{code: CodeOk},
+			want: &CodeInfo{CodeOk, messages[CodeOk]},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -57,6 +72,11 @@ func TestGetMessage(t *testing.T) {
 		want string
 	}{
 		// TODO: Add test cases.
+		{
+			name: "case1",
+			args: args{code: CodeOk},
+			want: messages[CodeOk],
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -68,6 +88,16 @@ func TestGetMessage(t *testing.T) {
 }
 
 func TestFillCodeInfo(t *testing.T) {
+	type testStruct struct {
+		CodeInfo
+		otherFiled string
+	}
+
+	// type testStruct2 struct {
+	// 	CodeInfo   *CodeInfo
+	// 	otherFiled string
+	// }
+
 	type args struct {
 		v  interface{}
 		ci *CodeInfo
@@ -77,7 +107,30 @@ func TestFillCodeInfo(t *testing.T) {
 		args args
 		want interface{}
 	}{
-		// TODO: Add test cases.
+		// {
+		// 	name: "struct case should be panic",
+		// 	args: args{
+		// 		v:  testStruct{},
+		// 		ci: GetCodeInfo(CodeOk),
+		// 	},
+		// 	want: testStruct{CodeInfo: *(GetCodeInfo(CodeOk))},
+		// },
+		{
+			name: "struct ptr case",
+			args: args{
+				v:  &testStruct{},
+				ci: GetCodeInfo(CodeOk),
+			},
+			want: &testStruct{CodeInfo: *(GetCodeInfo(CodeOk))},
+		},
+		// {
+		// 	name: "struct ptr and codeinfo ptr case",
+		// 	args: args{
+		// 		v:  &testStruct2{},
+		// 		ci: GetCodeInfo(CodeOk),
+		// 	},
+		// 	want: &testStruct2{CodeInfo: GetCodeInfo(CodeOk)},
+		// },
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"bytes"
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
@@ -89,4 +90,19 @@ func data2urlValues(data map[string]interface{}) url.Values {
 		}
 	}
 	return uvs
+}
+
+// CopyRequest means to copy a request for another handle-func or else
+func CopyRequest(req *http.Request) *http.Request {
+	body, _ := ioutil.ReadAll(req.Body)
+	rdOnly := ioutil.NopCloser(bytes.NewBuffer(body))
+
+	newReq, err := http.NewRequest(req.Method, req.URL.String(), bytes.NewBuffer(body))
+	if err != nil {
+		panic(err)
+	}
+
+	newReq.Header = req.Header
+	req.Body = rdOnly
+	return newReq
 }

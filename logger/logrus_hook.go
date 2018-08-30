@@ -29,7 +29,7 @@ func (hook *Hook) Fire(entry *logrus.Entry) error {
 
 // NewHook ...
 func NewHook(levels ...logrus.Level) *Hook {
-	hook := Hook{
+	hook := &Hook{
 		Field:  "file",
 		Skip:   5,
 		levels: levels,
@@ -41,7 +41,7 @@ func NewHook(levels ...logrus.Level) *Hook {
 		hook.levels = logrus.AllLevels
 	}
 
-	return &hook
+	return hook
 }
 
 func findCaller(skip int) (string, string, int) {

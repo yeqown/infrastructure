@@ -12,15 +12,15 @@ var (
 
 // NewConnection ... new a connection from redis pool
 func NewConnection() redis.Conn {
-	if redisPool == nil {
+	if pool == nil {
 		ConnectRedis(":6379", "", "0")
 	}
-	return redisPool.Get()
+	return pool.Get()
 }
 
 // ConnectRedis ... connect to redis
 func ConnectRedis(addr, password, db string) {
-	redisPool = &redis.Pool{
+	pool = &redis.Pool{
 		Dial: func() (redis.Conn, error) {
 			c, err := redis.Dial("tcp", addr)
 			if err != nil {

@@ -1,0 +1,7 @@
+.vscode/
+vendor/
+!/vendor/manifest
+testdata/
+
+.DS_Store
+types.go

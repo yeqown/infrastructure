@@ -87,12 +87,11 @@ func GetMessage(code int) string {
 // FillCodeInfo ... fill a response struct will *CodeInfo
 // TODO: validate v
 func FillCodeInfo(v interface{}, ci *CodeInfo) interface{} {
-	ele := reflect.ValueOf(v).Elem()
-	field := ele.FieldByName("CodeInfo")
-
-	if ci.Message == "" {
-		ci.Message = GetMessage(ci.Code)
+	if reflect.TypeOf(v).Kind() != reflect.Ptr {
+		panic("v must be ptr")
 	}
+	field := reflect.ValueOf(v).Elem().
+		FieldByName("CodeInfo")
 
 	// set field
 	field.FieldByName("Code").SetInt(int64(ci.Code))

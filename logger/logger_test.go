@@ -1,6 +1,7 @@
 package logger
 
 import (
+	"context"
 	"testing"
 	"time"
 )
@@ -50,24 +51,24 @@ func Test_NewJSONLogger(t *testing.T) {
 	logger.Error(sa)
 }
 
-func Test_NewJSONLogger(t *testing.T) {
-	l, _ := NewJSONLogger("./testdata", "new_logger_with_spiliter", "debug")
-	timer := time.NewTimer(10 * time.Second)
-	quit := false
-	go func() {
-		select {
-		case <-timer.C:
-			quit = true
-		}
-	}()
+func Test_NewJSONLogger_multi(t *testing.T) {
+	l, _ := NewJSONLogger("./testdata", "new_logger_multi", "debug")
+	ctx, cancel := context.WithCancel(context.Background())
 
-	for {
-		if quit {
-			break
-		}
-
-		l.Info("test msg")
-		time.Sleep(1 * time.Second)
+	for i := 0; i < 10; i++ {
+		go func(ctx context.Context, i int) {
+			ticker := time.NewTicker(2 * time.Second)
+			for {
+				select {
+				case <-ticker.C:
+					l.Info("Test_NewJSONLogger_multi-", i)
+				case <-ctx.Done():
+					break
+				}
+			}
+		}(ctx, i)
 	}
-	t.Log("done")
+
+	time.Sleep(10 * time.Second)
+	cancel()
 }

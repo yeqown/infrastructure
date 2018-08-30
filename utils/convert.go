@@ -5,20 +5,22 @@ import (
 )
 
 // ConvertStructToMap convert struct value into map[string]interface{}
-func ConvertStructToMap(in interface{}) (out map[string]interface{}) {
-	// out = make(map[string]interface{})
+func ConvertStructToMap(in interface{}) map[string]interface{} {
+	out := make(map[string]interface{})
 
 	v := reflect.ValueOf(in)
 	if v.Kind() == reflect.Ptr {
 		v = v.Elem()
 	}
 	if v.Kind() != reflect.Struct {
-		panic("StructToMap only support struct")
+		println("StructToMap only support struct")
+		return out
 	}
 
 	// to do if this is empty
 	if v == reflect.Zero(reflect.TypeOf(in)) {
-		panic("error: StructToMap empty param in")
+		println("error: StructToMap empty param in")
+		return out
 	}
 	typ := v.Type()
 
@@ -32,5 +34,5 @@ func ConvertStructToMap(in interface{}) (out map[string]interface{}) {
 			out[jsonTagName] = v.Field(i).Interface() // set key of map to value in struct field
 		}
 	}
-	return
+	return out
 }

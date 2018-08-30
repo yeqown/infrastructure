@@ -12,6 +12,9 @@ func TestParseFloat(t *testing.T) {
 		want float64
 	}{
 		// TODO: Add test cases.
+		{"1.23", args{"1.23"}, 1.23},
+		{"1.0", args{"1.0"}, 1.0},
+		{".02131", args{"0.02131"}, 0.02131},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -32,6 +35,9 @@ func TestDecimal(t *testing.T) {
 		want float64
 	}{
 		// TODO: Add test cases.
+		{"1.23", args{1.23}, 1.23},
+		{"1.0", args{1.0}, 1.00},
+		{".02131", args{0.02131}, 0.02},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
