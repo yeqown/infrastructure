@@ -30,7 +30,7 @@ var (
 	filenames arrayFlags
 
 	debug = flag.Bool("debug", false, "debug mode, if open this will output info")
-	dir   = flag.String("dir", "", "model directory from where")
+	dir   = flag.String("dir", ".", "model directory from where")
 	// generate cfg
 	generateFilename     = flag.String("generateFilename", "types.go", "generate file name will be use this, default is (types.go)")
 	generateDir          = flag.String("generateDir", ".", "generate file will be saved here, default is (current dir)")
@@ -49,19 +49,9 @@ func main() {
 	exportDir, _ := filepath.Abs(*generateDir)
 	*dir, _ = filepath.Abs(*dir)
 	if *debug {
-		log.Println("generateDir:", *dir)
+		log.Println("fromDir:", *dir)
 		log.Println("generateFilename:", *generateFilename)
 		log.Println("exportDir:", exportDir)
-	}
-
-	cfg := &tools.UsageCfg{
-		ExportDir:          exportDir,
-		ExportFilename:     *generateFilename,
-		ExportPkgName:      *generatePkgName,
-		ExportStructSuffix: *generateStructSuffix,
-		ModelImportPath:    *modelImportPath,
-		StructSuffix:       *modelStructSuffix,
-		Debug:              *debug,
 	}
 
 	// set custom funcs
@@ -78,11 +68,23 @@ func main() {
 		}
 	}
 
+	cfg := &tools.UsageCfg{
+		ExportDir:          exportDir,
+		ExportFilename:     *generateFilename,
+		ExportPkgName:      *generatePkgName,
+		ExportStructSuffix: *generateStructSuffix,
+		ModelImportPath:    *modelImportPath,
+		StructSuffix:       *modelStructSuffix,
+		Debug:              *debug,
+		Filenames:          filenames,
+		Dir:                *dir,
+	}
+
 	if *debug {
 		log.Println("following filenames will be parsed", filenames)
 	}
 
-	if err := tools.ParseAndGenerate(cfg, *dir, filenames...); err != nil {
+	if err := tools.ParseAndGenerate(cfg); err != nil {
 		panic(err)
 	}
 
