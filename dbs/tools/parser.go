@@ -4,73 +4,38 @@ package tools
 import (
 	"go/types"
 	"log"
-	"path"
 	"strings"
 
 	"golang.org/x/tools/go/loader"
 )
 
-type parseTagFunc func(s string) string
-
-var (
-	conf                      loader.Config
-	parseTag                  parseTagFunc = defaultParseTagFunc
-	specifiedStructTypeSuffix              = "Model"
-	specifiedStructTypePrefix              = "Model"
-	isDebug                   bool
-)
-
-// UsageCfg ... config tools some feature
-type UsageCfg struct {
-	// Dir 设置需要对那一路径下的文件进行解析
-	Dir string
-	// ExportDir 设置生成的文件的存放地址
-	ExportDir string
-	// ExportFilename 指定生成的文件名字
-	ExportFilename string
-	// ExportPkgName 指定生成的文件的包名
-	ExportPkgName string
-	// ExportStructSuffix 指定生成的新的机构体后缀
-	ExportStructSuffix string
-	// ModelImportPath 指定源文件所在包的导入路径
-	ModelImportPath string
-	// StructSuffix 需要解析的自定义结构体后缀
-	StructSuffix string
-	// Debug 调试模式开关
-	Debug bool
-	// Filenames 指定需要解析的.go源文件 文件名字
-	Filenames []string
+// filed of struct
+type field struct {
+	// field name
+	name string
+	// field type, TODO:save as types.Type
+	typ string
+	// tag you got by yourself, call `SetCustomParseTagFunc` to set.
+	// while origin tag is `json:"json" xml:"xml_tag"`
+	// but you only want to got json, you must get this by yourself
+	tag string
 }
 
-// ParseAndGenerate parse all input go files and
-// get wanted struct info save with innerStruct, and then generate file
-func ParseAndGenerate(cfg *UsageCfg) error {
-	specifiedStructTypeSuffix = cfg.StructSuffix
-	isDebug = cfg.Debug
-
-	// parse
-	ises, err := loadGoFiles(cfg.Dir, cfg.ModelImportPath, cfg.Filenames...)
-	if err != nil {
-		return err
-	}
-
-	// generate
-	generateFile(ises, &outfileCfg{
-		exportFilename:  path.Join(cfg.ExportDir, cfg.ExportFilename),
-		exportPkgName:   cfg.ExportPkgName,
-		modelImportPath: cfg.ModelImportPath,
-	})
-
-	return nil
-}
-
-// SetCustomParseTagFunc use user's custom parseTag func
-func SetCustomParseTagFunc(f parseTagFunc) {
-	parseTag = f
+type innerStruct struct {
+	// all fields
+	fields []*field
+	// struct origin string define
+	content string
+	// struct name
+	name string
+	// struct owned by which package
+	pkgName string
 }
 
 // Exported, and specified type
 func loadGoFiles(dir string, importPath string, filenames ...string) ([]*innerStruct, error) {
+	var conf loader.Config
+
 	conf.Cwd = dir
 	conf.CreateFromFilenames(importPath, filenames...)
 
@@ -135,25 +100,16 @@ func loopProgramCreated(
 	return
 }
 
-type field struct {
-	name string
-	typ  string
-	tag  string
-}
-
-type innerStruct struct {
-	fields  []*field
-	content string
-	name    string
-	pkgName string
-}
-
 // parseStructFields parse fields
 func parseStructFields(st *types.Struct) []*field {
 	flds := make([]*field, 0, st.NumFields())
 
 	for i := 0; i < st.NumFields(); i++ {
 		fld := st.Field(i)
+		// skip unexported field
+		if !fld.Exported() {
+			continue
+		}
 		isField := new(field)
 
 		isField.name = fld.Name()

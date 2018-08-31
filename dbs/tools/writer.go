@@ -10,18 +10,6 @@ import (
 	"text/template"
 )
 
-type genTagFunc func(name, typ, tag string) string
-
-var (
-	genTag             genTagFunc = defaultGenTagFunc
-	exportStructSuffix string
-)
-
-// SetCustomGenTagFunc use user's custom genTagFunc
-func SetCustomGenTagFunc(f genTagFunc) {
-	genTag = f
-}
-
 func defaultGenTagFunc(name, typ, tag string) string {
 	return fmt.Sprintf("json:\"%s\"", tag)
 }
