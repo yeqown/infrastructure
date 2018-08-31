@@ -40,6 +40,12 @@ Usage of ./dto:
         specified in which Model name style can be generate (default "Model")
 ```
 
+#### 直接安装
+
+```
+go get github.com/yeqown/server-common/dbs/tools/cmd/dto
+```
+
 #### 安装
 
 ```sh
@@ -47,7 +53,6 @@ go get github.com/yeqown/server-common/dbs/tools
 # 获取 tool.main.go, 并选择性的实现自己的 CustomParseTagFunc & CustomGenerateTagFunc
 go build -o dto tool.main.go
 ```
-
 
 #### 使用实例
 
