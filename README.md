@@ -12,4 +12,4 @@ collecting some tools those will be useful while coding a web application with G
 
 ## Golang Model Struct to Service Struct
 
-* [tool](https://github.com/yeqown/server-common/tree/master/dbs/tools)
+* [dto](https://github.com/yeqown/server-common/tree/master/dbs/tools)

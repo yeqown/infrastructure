@@ -18,8 +18,8 @@ type UserService struct {
 ### 使用方法
 
 ```bash
-➜  server-common git:(master) ✗ ./dbtools -h
-Usage of ./dbtools:
+➜  server-common git:(master) ✗ ./dto -h
+Usage of ./dto:
   -debug
         debug mode, if open this will output info
   -dir string
@@ -45,7 +45,7 @@ Usage of ./dbtools:
 ```sh
 go get github.com/yeqown/server-common/dbs/tools
 # 获取 tool.main.go, 并选择性的实现自己的 CustomParseTagFunc & CustomGenerateTagFunc
-go build -o dbtools tool.main.go
+go build -o dto tool.main.go
 ```
 
 
@@ -55,8 +55,10 @@ go build -o dbtools tool.main.go
 # 根据./dbs/tools/testdata目录下的type_model.go生成文件，
 # 在./dbs/tools/testdata目录下生成文件，
 # 指定包名为testdata
-dbtools -dir=./dbs/tools/testdata -filename=type_model.go -generatePkgName=testdata 
+dto -dir=./dbs/tools/testdata -filename=type_model.go -generatePkgName=testdata 
 -generateDir=./dbs/tools/testdata -modelImportPath=model
+
+# 多文件可以使用多次 -filename=model1.go -filename=model2.go
 ```
 
 ```golang
