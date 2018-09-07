@@ -37,7 +37,7 @@ func ConnectMysql(address, loc, parseTime, charset string, pool int) {
 	}
 
 	db.DB().SetMaxOpenConns(pool)
-	db.DB().SetMaxIdleConns(pool / 2)
+	db.DB().SetMaxIdleConns(int(pool / 2))
 	db.LogMode(false)
 	db.SingularTable(true)
 
