@@ -3,6 +3,7 @@ package tools
 import (
 	"bytes"
 	"fmt"
+	"go/format"
 	"io"
 	"log"
 	"os"
@@ -58,7 +59,13 @@ func generateFile(ises []*innerStruct, cfg *outfileCfg) {
 		log.Println("outfile:", cfg.exportFilename)
 	}
 
-	wirteFile(cfg.exportFilename, buf.Bytes())
+	// format file code
+	bs, err := format.Source(buf.Bytes())
+	if err != nil {
+		panic(err)
+	}
+
+	wirteFile(cfg.exportFilename, bs)
 }
 
 func writeFileHeader(w io.Writer, pkgName, modelImportPath string) error {
