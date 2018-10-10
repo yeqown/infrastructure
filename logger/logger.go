@@ -13,6 +13,11 @@ type Logger struct {
 	*logrus.Logger
 }
 
+// Println to implement interface `gorm.LogWriter`
+func (L Logger) Println(v ...interface{}) {
+	L.Logger.Infof(v...)
+}
+
 var (
 	// Log is default logger only output to os.Stdout
 	Log = logrus.New()

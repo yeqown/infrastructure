@@ -36,3 +36,12 @@ func ConvertStructToMap(in interface{}) map[string]interface{} {
 	}
 	return out
 }
+
+// ConvertUint8Slice2String ...
+func ConvertUint8Slice2String(u8s []uint8) string {
+	bs := make([]byte, 0)
+	for _, u := range u8s {
+		bs = append(bs, byte(u))
+	}
+	return string(bs)
+}
