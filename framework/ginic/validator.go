@@ -28,6 +28,7 @@ func BindCustomValidator(validationFuncs ...CustomValidationFunc) {
 		// register validation
 		v.RegisterValidation("mobile", mobile)
 		v.RegisterValidation("enum", enum)
+		v.RegisterValidation("ip", ip)
 		for _, cvFunc := range validationFuncs {
 			name := cvFunc.Name
 			if name == "" {
@@ -76,6 +77,18 @@ func enum(
 				return true
 			}
 		}
+	}
+	return false
+}
+
+// ip validator regexp ip string param
+func ip(
+	v *validator.Validate, topStruct reflect.Value, currentStructOrField reflect.Value,
+	field reflect.Value, fieldType reflect.Type, fieldKind reflect.Kind, param string,
+) bool {
+	if s, ok := field.Interface().(string); ok {
+		rgx := regexp.MustCompile(`^((25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(25[0-5]|2[0-4]\d|[01]?\d\d?)$`)
+		return rgx.MatchString(s)
 	}
 	return false
 }
