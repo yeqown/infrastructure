@@ -158,7 +158,7 @@ func (w *Watcher) Watch() {
 		default:
 			log.Println("Error no such action:", response.Action)
 		}
-		time.Sleep(5 * time.Second)
+		time.Sleep(1 * time.Second)
 	}
 }
 

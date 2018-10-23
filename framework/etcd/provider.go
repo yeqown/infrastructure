@@ -20,6 +20,7 @@ type ServerProvider interface {
 	Addr() string
 	// Heartbeat loop to set key and vlaue with ttl...
 	Heartbeat(context.Context, client.KeysAPI, *ProvideOptions)
+	Quit(client.KeysAPI, *ProvideOptions) error
 }
 
 type defaultServerProvider struct {
@@ -44,6 +45,9 @@ func (d defaultServerProvider) Heartbeat(
 	for {
 		select {
 		case <-ctx.Done():
+			if isDebug {
+				fmt.Println("context done")
+			}
 			return
 		default:
 			if err := Provide(kapi, d, opt); err != nil {
@@ -55,6 +59,10 @@ func (d defaultServerProvider) Heartbeat(
 		}
 		time.Sleep(10 * time.Second)
 	}
+}
+
+func (d defaultServerProvider) Quit(kapi client.KeysAPI, opt *ProvideOptions) error {
+	return Delete(kapi, d, opt)
 }
 
 // ProvideOptions ...
@@ -92,6 +100,36 @@ func Provide(kapi client.KeysAPI, provider ServerProvider, opt *ProvideOptions) 
 	_, err := kapi.Set(ctx, key, value, setOpts)
 	if err != nil {
 		fmt.Println(err)
+		return err
+	}
+
+	return nil
+}
+
+// Delete ...
+func Delete(kapi client.KeysAPI, provider ServerProvider, opt *ProvideOptions) error {
+	if isDebug {
+		fmt.Println("called delete func by provider")
+	}
+
+	if kapi == nil {
+		return errEmptyKeysAPI
+	}
+
+	var (
+		key = strings.TrimPrefix(provider.Name(), "/")
+	)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	if opt != nil {
+		if len(opt.NamePrefix) != 0 {
+			key = fmt.Sprintf("/%s/%s", opt.NamePrefix, key)
+		}
+	}
+
+	if _, err := kapi.Delete(ctx, key, nil); err != nil {
 		return err
 	}
 

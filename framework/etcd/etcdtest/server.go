@@ -7,12 +7,15 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/yeqown/server-common/framework/etcd"
 )
 
 var (
 	port = flag.Int("port", 3456, "setting port to listen")
+	sig  = make(chan os.Signal)
 )
 
 type response struct {
@@ -31,15 +34,16 @@ func hdlHello(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	flag.Parse()
-	http.HandleFunc("/hello", hdlHello)
+	signal.Notify(sig, syscall.SIGINT, syscall.SIGHUP)
 
-	fmt.Println("server listen on: ", *port)
+	http.HandleFunc("/hello", hdlHello)
 
 	endpoints := []string{
 		"http://127.0.0.1:2377",
 		"http://127.0.0.1:2379",
 		"http://127.0.0.1:2378",
 	}
+	etcd.OpenDebug(true)
 	kapi, err := etcd.Connect(endpoints...)
 	if err != nil {
 		fmt.Errorf(err.Error())
@@ -50,13 +54,23 @@ func main() {
 		fmt.Sprintf("srv_%d", *port),              // name
 		fmt.Sprintf("http://127.0.0.1:%d", *port), // addr
 	)
-	go provider.Heartbeat(context.Background(), kapi, &etcd.ProvideOptions{
+
+	ctx, cancel := context.WithCancel(context.Background())
+	go provider.Heartbeat(ctx, kapi, &etcd.ProvideOptions{
 		NamePrefix: "prefix",
 		SetOpts:    nil,
 	})
 
-	if err := http.ListenAndServe(fmt.Sprintf(":%d", *port), nil); err != nil {
-		fmt.Errorf(err.Error())
-		os.Exit(2)
+	fmt.Println("server listen on: ", *port)
+	go http.ListenAndServe(fmt.Sprintf(":%d", *port), nil)
+
+	select {
+	case <-sig:
+		fmt.Println("cancel called")
+		cancel()
+		provider.Quit(kapi, &etcd.ProvideOptions{
+			NamePrefix: "prefix",
+			SetOpts:    nil,
+		})
 	}
 }
