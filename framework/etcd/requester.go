@@ -2,7 +2,6 @@ package etcd
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log"
 	"strings"
@@ -12,17 +11,6 @@ import (
 	"go.etcd.io/etcd/client"
 )
 
-var (
-	errNoneNamePrefix = errors.New("none length of request name prefix")
-	isDebug           = false
-)
-
-// RequesterOptions ...
-type RequesterOptions struct {
-	NamePrefix string
-	GetOpts    *client.GetOptions
-}
-
 // Server ...
 type Server struct {
 	Name  string `json:"name"`
@@ -30,55 +18,14 @@ type Server struct {
 	Alive bool   `json:"alive"`
 }
 
-// RequestWithPrefix ...
-func RequestWithPrefix(kapi client.KeysAPI, reqOpts *RequesterOptions) ([]Server, error) {
-	if kapi == nil {
-		return nil, errEmptyKeysAPI
-	}
-
-	var (
-		// key     = strings.TrimPrefix(requester.Name(), "/")
-		key     string
-		getOpts *client.GetOptions
-	)
-
-	if reqOpts != nil {
-		if len(reqOpts.NamePrefix) == 0 {
-			return nil, errNoneNamePrefix
-		}
-		// make sure the format of key: "/prefix"
-		key = fmt.Sprintf("/%s", strings.TrimPrefix(reqOpts.NamePrefix, "/"))
-
-		if reqOpts.GetOpts != nil {
-			getOpts = reqOpts.GetOpts
-		}
-	}
-
-	response, err := kapi.Get(context.Background(), key, getOpts)
-	if err != nil {
-		fmt.Println(err)
-		return nil, err
-	}
-
-	servers := make([]Server, 0)
-	for _, node := range response.Node.Nodes {
-		servers = append(servers, Server{
-			Name:  strings.TrimPrefix(node.Key, key),
-			Addr:  node.Value,
-			Alive: true,
-		})
-	}
-
-	return servers, nil
-}
-
 // Watcher ...
 // ref to http://daizuozhuo.github.io/etcd-service-discovery/
 type Watcher struct {
-	members map[string]Server
-	kapi    client.KeysAPI
-	prefix  string
-	sync.RWMutex
+	members        map[string]Server // members dict container
+	kapi           client.KeysAPI    // KeysAPI
+	prefix         string            // srvName prefix
+	watchDruration time.Duration     // loop duration
+	sync.RWMutex                     // RW mutext
 }
 
 // RangeMember ...
@@ -137,37 +84,38 @@ func (w *Watcher) Watch() {
 	})
 
 	for {
-		response, err := etcdWatcher.Next(context.Background())
+		resp, err := etcdWatcher.Next(context.Background())
 		if err != nil {
 			log.Println("Error watch: ", err)
 		}
 
 		if isDebug {
-			fmt.Println(response.Action, response.Node.String())
+			fmt.Println(resp.Action, resp.Node.String())
 		}
 
-		switch response.Action {
+		switch resp.Action {
 		case "expire":
-			w.ExpireMember(response.PrevNode.Key)
+			w.ExpireMember(resp.PrevNode.Key)
 		case "set", "update":
-			// TODO: set or updatte s.members with lock
-			w.AddMember(response.Node.Key, response.Node.Value)
+			w.AddMember(resp.Node.Key, resp.Node.Value)
 		case "delete":
-			// TODO: delete s.members with lock
-			w.DeleteMember(response.Node.Key)
+			w.DeleteMember(resp.Node.Key)
 		default:
-			log.Println("Error no such action:", response.Action)
+			log.Println("Error no such action:", resp.Action)
 		}
-		time.Sleep(1 * time.Second)
+		time.Sleep(w.watchDruration)
 	}
 }
 
 // NewWatcher ...
-func NewWatcher(kapi client.KeysAPI, serverPrefix string) *Watcher {
+func NewWatcher(
+	kapi client.KeysAPI, serverPrefix string, d time.Duration,
+) *Watcher {
 	return &Watcher{
-		members: make(map[string]Server),
-		kapi:    kapi,
-		prefix:  serverPrefix,
-		RWMutex: sync.RWMutex{},
+		members:        make(map[string]Server),
+		kapi:           kapi,
+		prefix:         serverPrefix,
+		watchDruration: d,
+		RWMutex:        sync.RWMutex{},
 	}
 }

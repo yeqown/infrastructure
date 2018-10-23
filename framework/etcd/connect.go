@@ -2,10 +2,18 @@
 package etcd
 
 import (
+	"errors"
 	"fmt"
 	"time"
 
 	"go.etcd.io/etcd/client"
+)
+
+var (
+	isDebug           = false
+	errEmptyKeysAPI   = errors.New("empty client.KeysAPI")
+	errNoneNamePrefix = errors.New("none length of request name prefix")
+	errNilProvideOpt  = errors.New("nil provide options")
 )
 
 // Connect to etcd client
@@ -27,7 +35,7 @@ func Connect(addrs ...string) (client.KeysAPI, error) {
 	return client.NewKeysAPI(c), nil
 }
 
-// OpenDebug ...
+// OpenDebug set debug mode on
 func OpenDebug(open bool) {
 	isDebug = open
 }

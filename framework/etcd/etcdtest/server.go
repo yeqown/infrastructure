@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/yeqown/server-common/framework/etcd"
 )
@@ -50,27 +51,30 @@ func main() {
 		os.Exit(2)
 	}
 
-	provider := etcd.NewProvider(
+	provider := etcd.NewProvider(kapi,
 		fmt.Sprintf("srv_%d", *port),              // name
 		fmt.Sprintf("http://127.0.0.1:%d", *port), // addr
 	)
 
 	ctx, cancel := context.WithCancel(context.Background())
-	go provider.Heartbeat(ctx, kapi, &etcd.ProvideOptions{
-		NamePrefix: "prefix",
-		SetOpts:    nil,
-	})
+	opt := &etcd.ProvideOptions{
+		NamePrefix:        "prefix",
+		SetOpts:           nil,
+		TTLDuration:       20 * time.Second,
+		HeartbeatDuration: 10 * time.Second,
+	}
+	go etcd.ProviderHeartbeat(ctx, provider, opt)
 
 	fmt.Println("server listen on: ", *port)
 	go http.ListenAndServe(fmt.Sprintf(":%d", *port), nil)
 
 	select {
 	case <-sig:
-		fmt.Println("cancel called")
 		cancel()
-		provider.Quit(kapi, &etcd.ProvideOptions{
-			NamePrefix: "prefix",
-			SetOpts:    nil,
-		})
+		if err := provider.Quit(opt); err != nil {
+			fmt.Println("cancel called err: ", err)
+			return
+		}
+		fmt.Println("cancel called done")
 	}
 }
