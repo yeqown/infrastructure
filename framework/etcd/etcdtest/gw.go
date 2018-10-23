@@ -8,6 +8,7 @@ import (
 	"net/url"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/yeqown/server-common/framework/etcd"
 )
@@ -32,7 +33,7 @@ func main() {
 	// debug more, more log ~
 	etcd.OpenDebug(true)
 
-	watcher = etcd.NewWatcher(kapi, "prefix")
+	watcher = etcd.NewWatcher(kapi, "prefix", time.Second)
 	go watcher.Watch()
 
 	if err := http.ListenAndServe(":9090", handler); err != nil {
