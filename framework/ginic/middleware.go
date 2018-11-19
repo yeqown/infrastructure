@@ -29,7 +29,7 @@ func (w respBodyWriter) Write(b []byte) (int, error) {
 }
 
 // LogRequest is a middleware to log each request
-func LogRequest(Logger *logger.Logger) gin.HandlerFunc {
+func LogRequest(Logger *logger.Logger, logResponse bool) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Writer := &respBodyWriter{
 			body:           bytes.NewBufferString(""),
@@ -41,11 +41,13 @@ func LogRequest(Logger *logger.Logger) gin.HandlerFunc {
 		c.Next()
 
 		latency := time.Now().Sub(start)
-		
-		Logger.WithFields(map[string]interface{}{
-			"requestData":  parseRequestForm(ctxCpy),
-			"responseData": rbw.body.String(),
-		}).Infof("[Request] %v |%3d| %13v | %15s |%-7s %s",
+		fields := make(map[string]interface{})
+		fields["requestData"] =  parseRequestForm(ctxCpy)
+		if logResponse {
+			fields["responseData"] = rbw.body.String(),
+		}
+
+		Logger.WithFields(fields).Infof("[Request] %v |%3d| %13v | %15s |%-7s %s",
 			end.Format("2006/01/02 - 15:04:05"),
 			c.Writer.Status(),
 			latency,
