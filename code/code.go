@@ -6,25 +6,21 @@ import (
 )
 
 const (
+	// CodeOk 0
 	CodeOk = iota
+	// CodeParamInvalid ...
 	CodeParamInvalid
+	// CodeSystemErr ...
 	CodeSystemErr
+	// CodeNoPermission ...
 	CodeNoPermission
+	// CodeServerTimeout ...
 	CodeServerTimeout
+	// CodeResourceNotFound ...
 	CodeResourceNotFound
-
-	CodeUserExisted
-	CodeNotLogin
+	// CodeIllegeOP ...
 	CodeIllegeOP
-	CodeWrongTicket
-
-	CodeWrongAuthCode
-	CodeWrongExpired
-	CodeReqAuthCodeTimes
-	CodeRaiseProcessEnd
-	CodeNotEnoughRemind
-	CodeNotEnoughMoney
-
+	// ErrNoSuchCode ...
 	ErrNoSuchCode = "错误码未定义"
 )
 
@@ -35,18 +31,7 @@ var messages = map[int]string{
 	CodeNoPermission:     "没有权限",
 	CodeServerTimeout:    "服务超时",
 	CodeResourceNotFound: "资源未找到",
-
-	CodeUserExisted: "用户已经存在",
-	CodeNotLogin:    "未登录",
-	CodeIllegeOP:    "非法操作",
-	CodeWrongTicket: "Ticket不正确",
-
-	CodeWrongAuthCode:    "验证码错误",
-	CodeWrongExpired:     "验证码过期",
-	CodeRaiseProcessEnd:  "投资未开始",
-	CodeNotEnoughRemind:  "产品余额不足",
-	CodeNotEnoughMoney:   "用户余额不足",
-	CodeReqAuthCodeTimes: "上次请求时间小于60s或者相同手机号码请求次数过多",
+	CodeIllegeOP:         "非法操作",
 }
 
 // CodeInfo define a CodeInfo type

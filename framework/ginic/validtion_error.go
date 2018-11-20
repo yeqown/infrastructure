@@ -6,6 +6,11 @@ import (
 	validator "gopkg.in/go-playground/validator.v8"
 )
 
+const (
+	// ErrLayout 错误格式
+	ErrLayout = "%v不满足%s的%s校验条件"
+)
+
 // FormValidationErrors ...
 type FormValidationErrors struct {
 	errs []error

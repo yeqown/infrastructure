@@ -14,8 +14,8 @@ type Logger struct {
 }
 
 // Println to implement interface `gorm.LogWriter`
-func (L Logger) Println(v ...interface{}) {
-	L.Logger.Infof(v...)
+func (L Logger) Println(format string, v ...interface{}) {
+	L.Logger.Infof(format, v...)
 }
 
 var (

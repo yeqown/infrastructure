@@ -31,10 +31,12 @@ func (w respBodyWriter) Write(b []byte) (int, error) {
 // LogRequest is a middleware to log each request
 func LogRequest(Logger *logger.Logger, logResponse bool) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		c.Writer := &respBodyWriter{
+		rbw := &respBodyWriter{
 			body:           bytes.NewBufferString(""),
 			ResponseWriter: c.Writer,
 		}
+		c.Writer = rbw
+
 		start := time.Now()
 		ctxCpy := c.Copy()
 
@@ -42,13 +44,13 @@ func LogRequest(Logger *logger.Logger, logResponse bool) gin.HandlerFunc {
 
 		latency := time.Now().Sub(start)
 		fields := make(map[string]interface{})
-		fields["requestData"] =  parseRequestForm(ctxCpy)
+		fields["requestData"] = parseRequestForm(ctxCpy)
 		if logResponse {
-			fields["responseData"] = rbw.body.String(),
+			fields["responseData"] = rbw.body.String()
 		}
 
 		Logger.WithFields(fields).Infof("[Request] %v |%3d| %13v | %15s |%-7s %s",
-			end.Format("2006/01/02 - 15:04:05"),
+			start.Format("2006/01/02 - 15:04:05"),
 			c.Writer.Status(),
 			latency,
 			c.ClientIP(),
@@ -58,8 +60,8 @@ func LogRequest(Logger *logger.Logger, logResponse bool) gin.HandlerFunc {
 	}
 }
 
-func parseRequestForm(c *gin.Context) (form map[string]interface{}) {
-	switch c.Request.Method {
+func parseRequestForm(ctxCpy *gin.Context) (form map[string]interface{}) {
+	switch ctxCpy.Request.Method {
 	case http.MethodPost, http.MethodPut:
 		ctxCpy.Request.ParseMultipartForm(32 << 20)
 	case http.MethodGet:
