@@ -16,16 +16,18 @@ var (
 func PostForm(URL string,
 	data map[string]interface{},
 ) (map[string]interface{}, error) {
-
 	uvs := data2urlValues(data)
 	resp, err := http.PostForm(URL, uvs)
 	if err != nil {
 		return emptyMapInter, err
 	}
-	respData := make(map[string]interface{})
+
+	var (
+		respData map[string]interface{}
+	)
+
 	bs, _ := ioutil.ReadAll(resp.Body)
 	defer resp.Body.Close()
-
 	respStr := string(bs)
 
 	if !IsJSON(respStr) {
