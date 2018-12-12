@@ -61,6 +61,8 @@ func LogRequest(Logger *logger.Logger, logResponse bool) gin.HandlerFunc {
 }
 
 func parseRequestForm(ctxCpy *gin.Context) (form map[string]interface{}) {
+	form = make(map[string]interface{})
+
 	switch ctxCpy.Request.Method {
 	case http.MethodPost, http.MethodPut:
 		ctxCpy.Request.ParseMultipartForm(32 << 20)
