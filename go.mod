@@ -2,6 +2,7 @@ module github.com/yeqown/server-common
 
 require (
 	github.com/denisenkom/go-mssqldb v0.0.0-20180824013952-8fac8b954edb // indirect
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/erikstmartin/go-testdb v0.0.0-20160219214506-8d10e4a1bae5 // indirect
 	github.com/garyburd/redigo v0.0.0-20180404160726-569eae59ada9
 	github.com/gin-gonic/gin v0.0.0-20181023025633-c65e5efc9a0a
