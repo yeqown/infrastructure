@@ -13,6 +13,7 @@ require (
 	github.com/jinzhu/now v0.0.0-20181116074157-8ec929ed50c3 // indirect
 	github.com/lib/pq v1.0.0 // indirect
 	github.com/mattn/go-sqlite3 v1.10.0 // indirect
+	github.com/satori/go.uuid v1.2.0
 	github.com/sirupsen/logrus v1.0.5
 	go.etcd.io/etcd v0.0.0-20181022230727-86b933311d23
 	golang.org/x/tools v0.0.0-20180828015842-6cd1fcedba52

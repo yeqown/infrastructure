@@ -41,7 +41,9 @@ func newID() string {
 	return string(out2)
 }
 
-// Model ...
+// Model ... as custom gorm model with some callbacks
+// BeforeCreate ... create 之前调用
+// BeforeUpdate ... update 之前调用
 type Model struct {
 	ID         string    `gorm:"column:id;index;not null;type:varchar(128)"`
 	CreateTime time.Time `gorm:"column:create_time"`
