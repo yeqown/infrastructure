@@ -20,7 +20,7 @@ type CustomValidationFunc struct {
 	Func validator.Func
 }
 
-// BindCustomValidator ...
+// BindCustomValidator binding custom validation funcs into validator
 func BindCustomValidator(validationFuncs ...CustomValidationFunc) {
 	if v, ok := binding.Validator.Engine().(*validator.Validate); !ok {
 		panic("bind custom validator failed")
