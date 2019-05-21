@@ -1,5 +1,5 @@
 // Package code to define some code
-package code
+package codes
 
 import (
 	"reflect"
@@ -30,7 +30,7 @@ func TestNewCodeInfo(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := NewCodeInfo(tt.args.code, tt.args.message); !reflect.DeepEqual(got, tt.want) {
+			if got := New(tt.args.code, tt.args.message); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("NewCodeInfo() = %v, want %v", got, tt.want)
 			}
 		})
@@ -55,7 +55,7 @@ func TestGetCodeInfo(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := GetCodeInfo(tt.args.code); !reflect.DeepEqual(got, tt.want) {
+			if got := Get(tt.args.code); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("GetCodeInfo() = %v, want %v", got, tt.want)
 			}
 		})
@@ -119,9 +119,9 @@ func TestFillCodeInfo(t *testing.T) {
 			name: "struct ptr case",
 			args: args{
 				v:  &testStruct{},
-				ci: GetCodeInfo(CodeOK),
+				ci: Get(CodeOK),
 			},
-			want: &testStruct{Proto: *(GetCodeInfo(CodeOK))},
+			want: &testStruct{Proto: *(Get(CodeOK))},
 		},
 		// {
 		// 	name: "struct ptr and codeinfo ptr case",
@@ -134,8 +134,8 @@ func TestFillCodeInfo(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := FillCodeInfo(tt.args.v, tt.args.ci); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("FillCodeInfo() = %v, want %v", got, tt.want)
+			if got := Fill(tt.args.v, tt.args.ci); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Fill() = %v, want %v", got, tt.want)
 			}
 		})
 	}

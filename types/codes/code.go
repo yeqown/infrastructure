@@ -1,5 +1,5 @@
 // Package code to define some code
-package code
+package codes
 
 import (
 	"reflect"
@@ -40,8 +40,8 @@ type Proto struct {
 	ErrMessage string `json:"errmsg"`
 }
 
-// NewCodeInfo create a new *Proto
-func NewCodeInfo(code int, message string) *Proto {
+// New create a new *Proto
+func New(code int, message string) *Proto {
 	if message == "" {
 		message = GetMessage(code)
 	}
@@ -52,8 +52,8 @@ func NewCodeInfo(code int, message string) *Proto {
 	}
 }
 
-// GetCodeInfo get Proto with specified code
-func GetCodeInfo(code int) *Proto {
+// Get get Proto with specified code
+func Get(code int) *Proto {
 	return &Proto{
 		ErrCode:    code,
 		ErrMessage: GetMessage(code),
@@ -69,9 +69,9 @@ func GetMessage(code int) string {
 	return v
 }
 
-// FillCodeInfo ... fill a response struct will *Proto
+// Fill ... fill a response struct will *Proto
 // TODO: validate v
-func FillCodeInfo(v interface{}, ci *Proto) interface{} {
+func Fill(v interface{}, ci *Proto) interface{} {
 	if reflect.TypeOf(v).Kind() != reflect.Ptr {
 		panic("v must be ptr")
 	}
