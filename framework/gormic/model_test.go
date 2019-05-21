@@ -1,4 +1,4 @@
-package gormutils
+package gormic
 
 import (
 	"testing"
@@ -21,10 +21,10 @@ func Benchmark_newID(b *testing.B) {
 }
 
 /*
-pkg: github.com/yeqown/server-common/framework/gormutils
+pkg: github.com/yeqown/server-common/framework/gormic
 Benchmark_newID-8   	 1000000	      2117 ns/op	     272 B/op	       6 allocs/op
 
-pkg: github.com/yeqown/server-common/framework/gormutils
+pkg: github.com/yeqown/server-common/framework/gormic
 Benchmark_newID-8   	 1000000	      1966 ns/op	     144 B/op	       2 allocs/op
 */
 

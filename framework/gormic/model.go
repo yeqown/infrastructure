@@ -1,4 +1,4 @@
-package gormutils
+package gormic
 
 import (
 	"crypto/md5"
