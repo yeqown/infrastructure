@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/yeqown/server-common/dbs/tools"
+	"github.com/yeqown/infrastructure/framework/gormic/tools"
 )
 
 type arrayFlags []string

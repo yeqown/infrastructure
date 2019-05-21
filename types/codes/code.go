@@ -6,8 +6,8 @@ import (
 )
 
 const (
-	// CodeOk 0
-	CodeOk = iota
+	// CodeOK 0
+	CodeOK = iota
 	// CodeParamInvalid ...
 	CodeParamInvalid
 	// CodeSystemErr ...
@@ -25,7 +25,7 @@ const (
 )
 
 var messages = map[int]string{
-	CodeOk:               "成功",
+	CodeOK:               "成功",
 	CodeParamInvalid:     "参数非法",
 	CodeSystemErr:        "系统错误",
 	CodeNoPermission:     "没有权限",
@@ -34,29 +34,29 @@ var messages = map[int]string{
 	CodeIllegeOP:         "非法操作",
 }
 
-// CodeInfo define a CodeInfo type
-type CodeInfo struct {
-	Code    int    `json:"code"`
-	Message string `json:"message"`
+// Proto define a Proto type
+type Proto struct {
+	ErrCode    int    `json:"errcode"`
+	ErrMessage string `json:"errmsg"`
 }
 
-// NewCodeInfo create a new *CodeInfo
-func NewCodeInfo(code int, message string) *CodeInfo {
+// NewCodeInfo create a new *Proto
+func NewCodeInfo(code int, message string) *Proto {
 	if message == "" {
 		message = GetMessage(code)
 	}
 
-	return &CodeInfo{
-		Code:    code,
-		Message: message,
+	return &Proto{
+		ErrCode:    code,
+		ErrMessage: message,
 	}
 }
 
-// GetCodeInfo get CodeInfo with specified code
-func GetCodeInfo(code int) *CodeInfo {
-	return &CodeInfo{
-		Code:    code,
-		Message: GetMessage(code),
+// GetCodeInfo get Proto with specified code
+func GetCodeInfo(code int) *Proto {
+	return &Proto{
+		ErrCode:    code,
+		ErrMessage: GetMessage(code),
 	}
 }
 
@@ -69,18 +69,18 @@ func GetMessage(code int) string {
 	return v
 }
 
-// FillCodeInfo ... fill a response struct will *CodeInfo
+// FillCodeInfo ... fill a response struct will *Proto
 // TODO: validate v
-func FillCodeInfo(v interface{}, ci *CodeInfo) interface{} {
+func FillCodeInfo(v interface{}, ci *Proto) interface{} {
 	if reflect.TypeOf(v).Kind() != reflect.Ptr {
 		panic("v must be ptr")
 	}
 	field := reflect.ValueOf(v).Elem().
-		FieldByName("CodeInfo")
+		FieldByName("Proto")
 
 	// set field
-	field.FieldByName("Code").SetInt(int64(ci.Code))
-	field.FieldByName("Message").SetString(ci.Message)
+	field.FieldByName("ErrCode").SetInt(int64(ci.ErrCode))
+	field.FieldByName("ErrMessage").SetString(ci.ErrMessage)
 
 	return v
 }

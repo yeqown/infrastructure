@@ -14,18 +14,18 @@ func TestNewCodeInfo(t *testing.T) {
 	tests := []struct {
 		name string
 		args args
-		want *CodeInfo
+		want *Proto
 	}{
 		// TODO: Add test cases.
 		{
 			name: "case1",
-			args: args{code: CodeOk, message: "成功"},
-			want: &CodeInfo{CodeOk, "成功"},
+			args: args{code: CodeOK, message: "成功"},
+			want: &Proto{CodeOK, "成功"},
 		},
 		{
 			name: "case2",
-			args: args{code: CodeOk, message: ""},
-			want: &CodeInfo{CodeOk, messages[CodeOk]},
+			args: args{code: CodeOK, message: ""},
+			want: &Proto{CodeOK, messages[CodeOK]},
 		},
 	}
 	for _, tt := range tests {
@@ -44,13 +44,13 @@ func TestGetCodeInfo(t *testing.T) {
 	tests := []struct {
 		name string
 		args args
-		want *CodeInfo
+		want *Proto
 	}{
 		// TODO: Add test cases.
 		{
 			name: "case1",
-			args: args{code: CodeOk},
-			want: &CodeInfo{CodeOk, messages[CodeOk]},
+			args: args{code: CodeOK},
+			want: &Proto{CodeOK, messages[CodeOK]},
 		},
 	}
 	for _, tt := range tests {
@@ -74,8 +74,8 @@ func TestGetMessage(t *testing.T) {
 		// TODO: Add test cases.
 		{
 			name: "case1",
-			args: args{code: CodeOk},
-			want: messages[CodeOk],
+			args: args{code: CodeOK},
+			want: messages[CodeOK],
 		},
 	}
 	for _, tt := range tests {
@@ -89,18 +89,18 @@ func TestGetMessage(t *testing.T) {
 
 func TestFillCodeInfo(t *testing.T) {
 	type testStruct struct {
-		CodeInfo
+		Proto
 		otherFiled string
 	}
 
 	// type testStruct2 struct {
-	// 	CodeInfo   *CodeInfo
+	// 	Proto   *Proto
 	// 	otherFiled string
 	// }
 
 	type args struct {
 		v  interface{}
-		ci *CodeInfo
+		ci *Proto
 	}
 	tests := []struct {
 		name string
@@ -111,25 +111,25 @@ func TestFillCodeInfo(t *testing.T) {
 		// 	name: "struct case should be panic",
 		// 	args: args{
 		// 		v:  testStruct{},
-		// 		ci: GetCodeInfo(CodeOk),
+		// 		ci: GetCodeInfo(CodeOK),
 		// 	},
-		// 	want: testStruct{CodeInfo: *(GetCodeInfo(CodeOk))},
+		// 	want: testStruct{Proto: *(GetCodeInfo(CodeOK))},
 		// },
 		{
 			name: "struct ptr case",
 			args: args{
 				v:  &testStruct{},
-				ci: GetCodeInfo(CodeOk),
+				ci: GetCodeInfo(CodeOK),
 			},
-			want: &testStruct{CodeInfo: *(GetCodeInfo(CodeOk))},
+			want: &testStruct{Proto: *(GetCodeInfo(CodeOK))},
 		},
 		// {
 		// 	name: "struct ptr and codeinfo ptr case",
 		// 	args: args{
 		// 		v:  &testStruct2{},
-		// 		ci: GetCodeInfo(CodeOk),
+		// 		ci: GetCodeInfo(CodeOK),
 		// 	},
-		// 	want: &testStruct2{CodeInfo: GetCodeInfo(CodeOk)},
+		// 	want: &testStruct2{Proto: GetCodeInfo(CodeOK)},
 		// },
 	}
 	for _, tt := range tests {

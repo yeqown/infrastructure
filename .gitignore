@@ -1,9 +1,9 @@
-.vscode/
-vendor/
-!/vendor/manifest
-testdata/
+# Folder
+.vscode
+vendor
+testdata
 
+# Files
 .DS_Store
 types.go
-
 start-etcd.sh

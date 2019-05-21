@@ -1,4 +1,4 @@
-package dbs
+package gormic
 
 ### 目标:
 a tool to generate Model struct to service Struct like convert UserModel to UserService
@@ -43,13 +43,13 @@ Usage of ./dto:
 #### 直接安装
 
 ```
-go get github.com/yeqown/server-common/dbs/tools/cmd/dto
+go get github.com/yeqown/infrastructure/framework/gormic/tools/cmd/dto
 ```
 
 #### 安装
 
 ```sh
-go get github.com/yeqown/server-common/dbs/tools
+go get github.com/yeqown/infrastructure/framework/gormic/tools
 # 获取 tool.main.go, 并选择性的实现自己的 CustomParseTagFunc & CustomGenerateTagFunc
 go build -o dto tool.main.go
 ```
@@ -57,11 +57,11 @@ go build -o dto tool.main.go
 #### 使用实例
 
 ```sh
-# 根据./dbs/tools/testdata目录下的type_model.go生成文件，
-# 在./dbs/tools/testdata目录下生成文件，
+# 根据./gormic/tools/testdata目录下的type_model.go生成文件，
+# 在./gormic/tools/testdata目录下生成文件，
 # 指定包名为testdata
-dto -dir=./dbs/tools/testdata -filename=type_model.go -generatePkgName=testdata 
--generateDir=./dbs/tools/testdata -modelImportPath=model
+dto -dir=./gormic/tools/testdata -filename=type_model.go -generatePkgName=testdata 
+-generateDir=./gormic/tools/testdata -modelImportPath=model
 
 # 多文件可以使用多次 -filename=model1.go -filename=model2.go
 ```
@@ -102,7 +102,7 @@ func f(a string) error {
 // 生成的文件 types.go[未被格式化]
 
 // Package testdata ...
-// Generate by github.com/yeqown/server-common/dbs/tools
+// Generate by github.com/yeqown/infrastructure/framework/gormic/tools
 package testdata
 
 import (

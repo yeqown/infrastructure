@@ -19,8 +19,8 @@ func Test_loadGoFile(t *testing.T) {
 		{
 			name: "case 1",
 			args: args{
-				dir:      "/Users/yeqiang/go/src/github.com/yeqown/server-common/dbs/tools/testdata",
-				path:     "github.com/yeqown/server-common/dbs/tools/testdata",
+				dir:      "/Users/yeqiang/go/src/github.com/yeqown/infrastructure/framework/gormic/tools/testdata",
+				path:     "github.com/yeqown/infrastructure/framework/gormic/tools/testdata",
 				filename: "type_model.go",
 			},
 			wantErr: false,

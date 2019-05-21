@@ -3,7 +3,7 @@ package tools
 // define some tmplates to output format
 
 const fileHeaderTmpl = `// Package {{.PkgName}} ...
-// Generate by github.com/yeqown/server-common/dbs/tools
+// Generate by github.com/yeqown/infrastructure/framework/gormic/tools
 package {{.PkgName}}
 {{if ne .ModelImportPath ""}}
 import (

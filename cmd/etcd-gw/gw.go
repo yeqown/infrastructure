@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/yeqown/server-common/framework/etcd"
+	"github.com/yeqown/infrastructure/framework/etcd"
 )
 
 var (

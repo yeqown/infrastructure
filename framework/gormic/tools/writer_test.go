@@ -40,7 +40,7 @@ func Test_generateFile(t *testing.T) {
 					},
 				},
 				cfg: &outfileCfg{
-					exportFilename:  "testdata/testfile.go",
+					exportFilename:  "testdata/testfile.go.txt",
 					exportPkgName:   "testdata ",
 					modelImportPath: "models",
 				},

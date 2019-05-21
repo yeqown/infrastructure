@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/yeqown/server-common/logger"
+	logger "github.com/yeqown/infrastructure/framework/logrus-logger"
 )
 
 // Recovery is a middleware to record each panic into file
