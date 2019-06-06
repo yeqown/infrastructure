@@ -1,4 +1,4 @@
-# server-common
+# infrastructure
 collecting some tools those will be useful while coding a web application with Golang
 
 ### TODO: 
@@ -12,4 +12,4 @@ collecting some tools those will be useful while coding a web application with G
 
 ## Golang Model Struct to Service Struct
 
-* [dto](https://github.com/yeqown/infrastructure/tree/master/gormic/tools)
+> moved to [jademperor/go-tools](github.com/jademperor/go-tools)
