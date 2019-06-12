@@ -1,4 +1,4 @@
-package utils
+package lang
 
 import (
 	"net/url"

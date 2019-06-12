@@ -1,13 +1,18 @@
-package utils
+package lang
 
 import (
+	"errors"
 	"fmt"
 	"reflect"
 	"strings"
 )
 
-// ConvertStructToMap convert struct value into map[string]interface{}
-func ConvertStructToMap(in interface{}) map[string]interface{} {
+var (
+	errInvalidTypeOfSlice = errors.New("type is not slice")
+)
+
+// StructToMap convert struct value into map[string]interface{}
+func StructToMap(in interface{}) map[string]interface{} {
 	out := make(map[string]interface{})
 
 	v := reflect.ValueOf(in)
@@ -39,8 +44,8 @@ func ConvertStructToMap(in interface{}) map[string]interface{} {
 	return out
 }
 
-// ConvertUint8Slice2String ...
-func ConvertUint8Slice2String(u8s []uint8) string {
+// Uint8ToSlice ...
+func Uint8ToSlice(u8s []uint8) string {
 	bs := make([]byte, 0)
 	for _, u := range u8s {
 		bs = append(bs, byte(u))
@@ -87,4 +92,27 @@ func mustbePtr(in interface{}) bool {
 
 func typeEqual(v reflect.Value, kind reflect.Kind) bool {
 	return v.Type().Kind() == kind
+}
+
+// ToSlice convert interface{} underlying []type to interfce{}
+func ToSlice(v interface{}) ([]interface{}, error) {
+	val := reflect.ValueOf(v)
+	typ := val.Type()
+
+	if typ.Kind() == reflect.Ptr {
+		typ = typ.Elem()
+		val = val.Elem()
+	}
+
+	// Check v's type and if is not slice will return an error
+	if typ.Kind() != reflect.Slice {
+		return nil, errInvalidTypeOfSlice
+	}
+
+	result := make([]interface{}, val.Len())
+	// Get whole items in slice and put them into result
+	for i := 0; i < val.Len(); i++ {
+		result[i] = val.Index(i).Interface()
+	}
+	return result, nil
 }

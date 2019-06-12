@@ -1,4 +1,4 @@
-package utils
+package lang
 
 import (
 	"reflect"
@@ -14,7 +14,6 @@ func TestConvertStructToMap(t *testing.T) {
 		args    args
 		wantOut map[string]interface{}
 	}{
-		// TODO: Add test cases.
 		{
 			name: "case 1",
 			args: args{
@@ -31,8 +30,8 @@ func TestConvertStructToMap(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if gotOut := ConvertStructToMap(tt.args.in); !reflect.DeepEqual(gotOut, tt.wantOut) {
-				t.Errorf("ConvertStructToMap() = %v, want %v", gotOut, tt.wantOut)
+			if gotOut := StructToMap(tt.args.in); !reflect.DeepEqual(gotOut, tt.wantOut) {
+				t.Errorf("StructToMap() = %v, want %v", gotOut, tt.wantOut)
 			}
 		})
 	}
