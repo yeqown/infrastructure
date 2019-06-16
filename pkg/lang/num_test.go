@@ -11,7 +11,6 @@ func TestParseFloat(t *testing.T) {
 		args args
 		want float64
 	}{
-		// TODO: Add test cases.
 		{"1.23", args{"1.23"}, 1.23},
 		{"1.0", args{"1.0"}, 1.0},
 		{".02131", args{"0.02131"}, 0.02131},
@@ -34,7 +33,6 @@ func TestDecimal(t *testing.T) {
 		args args
 		want float64
 	}{
-		// TODO: Add test cases.
 		{"1.23", args{1.23}, 1.23},
 		{"1.0", args{1.0}, 1.00},
 		{".02131", args{0.02131}, 0.02},
