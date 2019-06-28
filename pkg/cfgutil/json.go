@@ -5,6 +5,7 @@ import (
 	"errors"
 	"io"
 	"io/ioutil"
+	"os"
 )
 
 var (
@@ -24,4 +25,9 @@ func LoadJSON(reader io.Reader, recv interface{}) error {
 	}
 
 	return json.Unmarshal(byts, recv)
+}
+
+// Open .
+func Open(fp string) (io.ReadCloser, error) {
+	return os.OpenFile(fp, os.O_RDONLY, 0644)
 }

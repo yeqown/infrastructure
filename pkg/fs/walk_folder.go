@@ -15,6 +15,9 @@ func ListFiles(root string, filter Filter) []string {
 	root, _ = filepath.Abs(root)
 
 	filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
+		if info == nil {
+			return nil
+		}
 		if filter(info) {
 			return nil
 		}
