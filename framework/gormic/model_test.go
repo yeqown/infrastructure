@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/jinzhu/gorm"
+	"github.com/yeqown/infrastructure/types"
 )
 
 func Test_NewID(t *testing.T) {
@@ -38,7 +39,7 @@ func GetDemoModelConn(db *gorm.DB) *TableConn {
 }
 
 func TestModel(t *testing.T) {
-	mysqlC := &MysqlC{
+	mysqlC := &types.MysqlC{
 		UserName:  "root",
 		Password:  "ncDYbAAx4mrl",
 		Addr:      "127.0.0.1",

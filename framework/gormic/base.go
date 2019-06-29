@@ -32,3 +32,16 @@ type TableConn struct {
 	*gorm.DB
 	*sync.RWMutex
 }
+
+// ConnectSqlite3 .
+func ConnectSqlite3(c *types.SQLite3Config) (*gorm.DB, error) {
+	db, err := gorm.Open("sqlite3", c.Name)
+	if err != nil {
+		return nil, err
+	}
+	if err = db.DB().Ping(); err != nil {
+		return nil, fmt.Errorf("could not ping mysql server: %v", err)
+	}
+
+	return db, nil
+}

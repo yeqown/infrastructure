@@ -4,12 +4,13 @@ import (
 	"testing"
 
 	_ "github.com/jinzhu/gorm/dialects/mysql"
+	"github.com/yeqown/infrastructure/types"
 )
 
 func TestConnectMysql(t *testing.T) {
-	mysqlC := &MysqlC{
+	mysqlC := &types.MysqlC{
 		UserName:  "root",
-		Password:  "#Wm.2019",
+		Password:  "ncDYbAAx4mrl",
 		Addr:      "192.168.2.254",
 		DBName:    "bussiness",
 		Charset:   "utf8",
