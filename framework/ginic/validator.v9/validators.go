@@ -1,6 +1,8 @@
 package validator
 
 import (
+	"log"
+	"reflect"
 	"regexp"
 	"strings"
 
@@ -53,5 +55,41 @@ func IP(fld vali.FieldLevel) bool {
 	if s := fld.Field().String(); s != "" {
 		return rgxIP.MatchString(s)
 	}
+	return false
+}
+
+// ResourceCheck to check resource id in request form
+func ResourceCheck(fld vali.FieldLevel) bool {
+	chk, ok := _checkers[fld.Param()]
+	if !ok {
+		panic(fld.Param() + " not registered")
+	}
+
+	switch k := fld.Field().Kind(); k {
+	case reflect.String:
+		id := fld.Field().String()
+		if err := chk.Check(id); err != nil {
+			log.Printf("check(%s) error: %v", id, err)
+			return false
+		}
+		return true
+
+	case reflect.Int64, reflect.Int:
+
+		id := fld.Field().Int()
+		if err := chk.CheckInt64(id); err != nil {
+			log.Printf("check(%d) error: %v", id, err)
+			return false
+		}
+		return true
+	case reflect.Uint64, reflect.Uint:
+		id := fld.Field().Uint()
+		if err := chk.CheckInt64(int64(id)); err != nil {
+			log.Printf("check(%d) error: %v", id, err)
+			return false
+		}
+		return true
+	}
+
 	return false
 }

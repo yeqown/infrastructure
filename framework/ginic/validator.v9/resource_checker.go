@@ -1,15 +1,17 @@
 package validator
 
 import (
-	"fmt"
-
 	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
 
-var _checkers map[string]ResourceChecker
+var (
+	_checkers map[string]ResourceChecker
+	_         ResourceChecker = MySQLChecker{}
+	_         ResourceChecker = MgoChecker{}
+)
 
 func init() {
 	_checkers = make(map[string]ResourceChecker)
@@ -17,11 +19,12 @@ func init() {
 
 // ResourceChecker .
 type ResourceChecker interface {
-	Check(id int64) error
+	Check(id string) error
+	CheckInt64(id int64) error
 }
 
-// Register to bind name with checker
-func Register(name string, ic ResourceChecker) {
+// RegisterResChk to bind name with checker
+func RegisterResChk(name string, ic ResourceChecker) {
 	_checkers[name] = ic
 }
 
@@ -31,15 +34,20 @@ type MySQLChecker struct {
 	tblName string
 }
 
-// Check of  MySQLChecker .
-func (c MySQLChecker) Check(id int64) error {
+// CheckInt64 of MySQLChecker .
+func (c MySQLChecker) CheckInt64(id int64) error {
 	cnt := 0
 	err := c.db.Table(c.tblName).Where("id = ?", id).Count(&cnt).Error
-	fmt.Printf("err: %v, cnt: %d", err, cnt)
+	// fmt.Printf("err: %v, cnt: %d", err, cnt)
 	if err == nil && cnt == 1 {
 		return nil
 	}
-	return errors.Errorf("could not find resource with: %d ", id)
+	return errors.Errorf("could not find resource with: %d", id)
+}
+
+// Check of MySQLChecker .
+func (c MySQLChecker) Check(s string) error {
+	return errors.New("do not support")
 }
 
 // NewMySQLChecker .
@@ -65,6 +73,11 @@ func (c MgoChecker) Check(id string) error {
 	}
 
 	return errors.Errorf("could not find resource with: %s", id)
+}
+
+// CheckInt64 of MgoChecker .
+func (c MgoChecker) CheckInt64(id int64) error {
+	return errors.New("do not support")
 }
 
 // NewMgoChecker .

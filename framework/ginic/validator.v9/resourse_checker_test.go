@@ -3,16 +3,14 @@ package validator_test
 import (
 	"testing"
 
-	"gopkg.in/mgo.v2/bson"
-
+	"github.com/yeqown/infrastructure/framework/ginic/validator.v9"
+	"github.com/yeqown/infrastructure/framework/gormic"
 	"github.com/yeqown/infrastructure/framework/mgo"
+	"github.com/yeqown/infrastructure/types"
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
-
-	"github.com/yeqown/infrastructure/framework/ginic/validator.v9"
-	"github.com/yeqown/infrastructure/framework/gormic"
-	"github.com/yeqown/infrastructure/types"
+	"gopkg.in/mgo.v2/bson"
 )
 
 type UserModel struct {
@@ -44,7 +42,7 @@ func Test_MySQLChecker(t *testing.T) {
 	checker := validator.NewMySQLChecker(db, tblName)
 
 	// test before data exist
-	if err := checker.Check(1); err == nil {
+	if err := checker.CheckInt64(1); err == nil {
 		t.Error("want err, got nil")
 		t.FailNow()
 	}
@@ -57,7 +55,7 @@ func Test_MySQLChecker(t *testing.T) {
 	}
 
 	// test after data exist
-	if err := checker.Check(1); err != nil {
+	if err := checker.CheckInt64(1); err != nil {
 		t.Error("should be no err, got err: ", err)
 		t.FailNow()
 	}
@@ -87,7 +85,6 @@ func Test_MgoChecker(t *testing.T) {
 		t.FailNow()
 	}
 
-	// TODO: fill testcase
 	_m := bson.M{
 		"_id":  bid,
 		"name": "foo",
