@@ -3,10 +3,14 @@ package validator_test
 import (
 	"testing"
 
+	"gopkg.in/mgo.v2/bson"
+
+	"github.com/yeqown/infrastructure/framework/mgo"
+
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 
-	"github.com/yeqown/infrastructure/framework/ginic/validator"
+	"github.com/yeqown/infrastructure/framework/ginic/validator.v9"
 	"github.com/yeqown/infrastructure/framework/gormic"
 	"github.com/yeqown/infrastructure/types"
 )
@@ -60,5 +64,42 @@ func Test_MySQLChecker(t *testing.T) {
 }
 
 func Test_MgoChecker(t *testing.T) {
+	db, err := mgo.ConnectMgo(&types.MgoConfig{
+		Addrs:     "localhost:27017",
+		Timeout:   5,
+		Database:  "test",
+		Username:  "",
+		Password:  "",
+		PoolLimit: 20,
+	})
 
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
+	checker := validator.NewMgoChecker(db, "user")
+
+	bid := bson.NewObjectId()
+	// test before data exist
+	if err := checker.Check(bid.Hex()); err == nil {
+		t.Error("want err, got nil")
+		t.FailNow()
+	}
+
+	// TODO: fill testcase
+	_m := bson.M{
+		"_id":  bid,
+		"name": "foo",
+	}
+	if err := db.C("user").Insert(_m); err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
+	// test after data exist
+	if err := checker.Check(bid.Hex()); err != nil {
+		t.Error("should be no err, got err: ", err)
+		t.FailNow()
+	}
 }

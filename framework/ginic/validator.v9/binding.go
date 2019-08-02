@@ -6,8 +6,8 @@ import (
 	vali "gopkg.in/go-playground/validator.v9"
 )
 
-// BindDataChecker .
-func BindDataChecker(db *gorm.DB) error {
+// BindResourseChecker .
+func BindResourseChecker(db *gorm.DB) error {
 	validate := binding.Validator.Engine().(*vali.Validate)
 	if err := validate.RegisterValidation("reschk", resourceChecker); err != nil {
 		return err
