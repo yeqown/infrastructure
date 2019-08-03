@@ -87,7 +87,7 @@ func Test_Validator_ResourceCheck(t *testing.T) {
 
 	// validate struct
 	var validate = vali.New()
-	validate.RegisterValidation("reschk", validator.ResourceCheck)
+	validate.RegisterValidation("reschk", validator.DefaultResourceCheck)
 	if err = validate.Struct(foo); err != nil {
 		t.Log("validate foo got err: ", err)
 		t.FailNow()

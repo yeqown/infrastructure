@@ -14,11 +14,18 @@ const (
 	rightBracket = "]"
 )
 
+// default inner checkers
+var _checkers map[string]ResourceChecker
+
+func init() {
+	_checkers = make(map[string]ResourceChecker)
+}
+
 // Enum validate the val is in enum type or not, only support string type
 // use like this: `form:"user_type" binding:"required,enum=[01/02/03]"`
-func Enum(fld vali.FieldLevel) bool {
-	if s := fld.Field().String(); s != "" {
-		param := fld.Param()
+func Enum(fl vali.FieldLevel) bool {
+	if s := fl.Field().String(); s != "" {
+		param := fl.Param()
 		leftBracketIdx := strings.Index(param, leftBracket)
 		rightBracketIdx := strings.Index(param, rightBracket)
 
@@ -43,31 +50,30 @@ var (
 )
 
 // Mobile validate mobile string
-func Mobile(fld vali.FieldLevel) bool {
-	if s := fld.Field().String(); s != "" {
+func Mobile(fl vali.FieldLevel) bool {
+	if s := fl.Field().String(); s != "" {
 		return rgxMobile.MatchString(s)
 	}
 	return false
 }
 
 // IP validator regexp ip string param
-func IP(fld vali.FieldLevel) bool {
-	if s := fld.Field().String(); s != "" {
+func IP(fl vali.FieldLevel) bool {
+	if s := fl.Field().String(); s != "" {
 		return rgxIP.MatchString(s)
 	}
 	return false
 }
 
-// ResourceCheck to check resource id in request form
-func ResourceCheck(fld vali.FieldLevel) bool {
-	chk, ok := _checkers[fld.Param()]
+func resourceCheck(checkers map[string]ResourceChecker, fl vali.FieldLevel) bool {
+	chk, ok := checkers[fl.Param()]
 	if !ok {
-		panic(fld.Param() + " not registered")
+		panic(fl.Param() + " not registered")
 	}
 
-	switch k := fld.Field().Kind(); k {
+	switch k := fl.Field().Kind(); k {
 	case reflect.String:
-		id := fld.Field().String()
+		id := fl.Field().String()
 		if err := chk.Check(id); err != nil {
 			log.Printf("check(%s) error: %v", id, err)
 			return false
@@ -76,14 +82,14 @@ func ResourceCheck(fld vali.FieldLevel) bool {
 
 	case reflect.Int64, reflect.Int:
 
-		id := fld.Field().Int()
+		id := fl.Field().Int()
 		if err := chk.CheckInt64(id); err != nil {
 			log.Printf("check(%d) error: %v", id, err)
 			return false
 		}
 		return true
 	case reflect.Uint64, reflect.Uint:
-		id := fld.Field().Uint()
+		id := fl.Field().Uint()
 		if err := chk.CheckInt64(int64(id)); err != nil {
 			log.Printf("check(%d) error: %v", id, err)
 			return false
@@ -92,4 +98,9 @@ func ResourceCheck(fld vali.FieldLevel) bool {
 	}
 
 	return false
+}
+
+// DefaultResourceCheck to check resource id in request form
+func DefaultResourceCheck(fl vali.FieldLevel) bool {
+	return resourceCheck(_checkers, fl)
 }

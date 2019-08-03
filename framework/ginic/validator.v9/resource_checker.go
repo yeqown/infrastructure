@@ -8,19 +8,15 @@ import (
 )
 
 var (
-	_checkers map[string]ResourceChecker
-	_         ResourceChecker = MySQLChecker{}
-	_         ResourceChecker = MgoChecker{}
+	_ ResourceChecker = MySQLChecker{}
+	_ ResourceChecker = MgoChecker{}
 )
-
-func init() {
-	_checkers = make(map[string]ResourceChecker)
-}
 
 // ResourceChecker .
 type ResourceChecker interface {
 	Check(id string) error
 	CheckInt64(id int64) error
+	Tag() string
 }
 
 // RegisterResChk to bind name with checker
@@ -48,6 +44,11 @@ func (c MySQLChecker) CheckInt64(id int64) error {
 // Check of MySQLChecker .
 func (c MySQLChecker) Check(s string) error {
 	return errors.New("do not support")
+}
+
+// Tag of MySQLChecker .
+func (c MySQLChecker) Tag() string {
+	return c.tblName
 }
 
 // NewMySQLChecker .
@@ -78,6 +79,11 @@ func (c MgoChecker) Check(id string) error {
 // CheckInt64 of MgoChecker .
 func (c MgoChecker) CheckInt64(id int64) error {
 	return errors.New("do not support")
+}
+
+// Tag of MgoChecker .
+func (c MgoChecker) Tag() string {
+	return c.collName
 }
 
 // NewMgoChecker .

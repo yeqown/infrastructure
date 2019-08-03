@@ -26,9 +26,9 @@ func BindCustomValidator(validationFuncs ...CustomValidationFunc) {
 		panic("bind custom validator failed")
 	} else {
 		// register validation
-		v.RegisterValidation("mobile", mobile)
-		v.RegisterValidation("enum", enum)
-		v.RegisterValidation("ip", ip)
+		v.RegisterValidation("mobile", Mobile)
+		v.RegisterValidation("enum", Enum)
+		v.RegisterValidation("ip", IP)
 		for _, cvFunc := range validationFuncs {
 			name := cvFunc.Name
 			if name == "" {
@@ -40,8 +40,8 @@ func BindCustomValidator(validationFuncs ...CustomValidationFunc) {
 	}
 }
 
-// validate mobile string
-func mobile(
+// Mobile validate mobile string
+func Mobile(
 	v *validator.Validate, topStruct reflect.Value, currentStructOrField reflect.Value,
 	field reflect.Value, fieldType reflect.Type, fieldKind reflect.Kind, param string,
 ) bool {
@@ -52,9 +52,9 @@ func mobile(
 	return false
 }
 
-// validate the val is in enum type or not, only support string type
+// Enum validate the val is in enum type or not, only support string type
 // use like this: `form:"user_type" binding:"required,enum=[01/02/03]"`
-func enum(
+func Enum(
 	v *validator.Validate, topStruct reflect.Value, currentStructOrField reflect.Value,
 	field reflect.Value, fieldType reflect.Type, fieldKind reflect.Kind, param string,
 ) bool {
@@ -81,8 +81,8 @@ func enum(
 	return false
 }
 
-// ip validator regexp ip string param
-func ip(
+// IP validator regexp ip string param
+func IP(
 	v *validator.Validate, topStruct reflect.Value, currentStructOrField reflect.Value,
 	field reflect.Value, fieldType reflect.Type, fieldKind reflect.Kind, param string,
 ) bool {
