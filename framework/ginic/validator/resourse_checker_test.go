@@ -3,7 +3,8 @@ package validator_test
 import (
 	"testing"
 
-	"github.com/yeqown/infrastructure/framework/ginic/validator.v9"
+	"github.com/yeqown/infrastructure/framework/ginic/validator"
+	// "github.com/yeqown/infrastructure/framework/ginic/validator.v9"
 	"github.com/yeqown/infrastructure/framework/gormic"
 	"github.com/yeqown/infrastructure/framework/mgo"
 	"github.com/yeqown/infrastructure/types"

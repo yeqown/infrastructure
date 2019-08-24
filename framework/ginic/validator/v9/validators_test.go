@@ -3,16 +3,27 @@ package validator_test
 import (
 	"testing"
 
-	validator "github.com/yeqown/infrastructure/framework/ginic/validator.v9"
+	"github.com/yeqown/infrastructure/framework/ginic/validator"
+	v9 "github.com/yeqown/infrastructure/framework/ginic/validator/v9"
 	"github.com/yeqown/infrastructure/framework/gormic"
 	mgolib "github.com/yeqown/infrastructure/framework/mgo"
 	"github.com/yeqown/infrastructure/types"
 
 	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/sqlite"
 	vali "gopkg.in/go-playground/validator.v9"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
+
+type UserModel struct {
+	gorm.Model
+	Name string
+}
+
+func (m UserModel) TableName() string {
+	return "users"
+}
 
 func prepareData1(sqlID uint, mgoID bson.ObjectId) (*gorm.DB, *mgo.Database, error) {
 	db1, err := gormic.ConnectSqlite3(
@@ -82,12 +93,12 @@ func Test_Validator_ResourceCheck(t *testing.T) {
 	collName := "user"
 
 	// init resource checker
-	validator.RegisterResChk("sqlUser", validator.NewMySQLChecker(sqlDB, tblName))
-	validator.RegisterResChk("mgoUser", validator.NewMgoChecker(mgoDB, collName))
+	v9.RegisterResChk("sqlUser", validator.NewMySQLChecker(sqlDB, tblName))
+	v9.RegisterResChk("mgoUser", validator.NewMgoChecker(mgoDB, collName))
 
 	// validate struct
 	var validate = vali.New()
-	validate.RegisterValidation("reschk", validator.DefaultResourceCheck)
+	validate.RegisterValidation("reschk", v9.DefaultResourceCheck)
 	if err = validate.Struct(foo); err != nil {
 		t.Log("validate foo got err: ", err)
 		t.FailNow()

@@ -19,11 +19,6 @@ type ResourceChecker interface {
 	Tag() string
 }
 
-// RegisterResChk to bind name with checker
-func RegisterResChk(name string, ic ResourceChecker) {
-	_checkers[name] = ic
-}
-
 // MySQLChecker is the default chcker for resource in MySQL DB
 type MySQLChecker struct {
 	db      *gorm.DB

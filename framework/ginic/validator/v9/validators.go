@@ -6,6 +6,8 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/yeqown/infrastructure/framework/ginic/validator"
+
 	vali "gopkg.in/go-playground/validator.v9"
 )
 
@@ -15,10 +17,10 @@ const (
 )
 
 // default inner checkers
-var _checkers map[string]ResourceChecker
+var _checkers map[string]validator.ResourceChecker
 
 func init() {
-	_checkers = make(map[string]ResourceChecker)
+	_checkers = make(map[string]validator.ResourceChecker)
 }
 
 // Enum validate the val is in enum type or not, only support string type
@@ -65,7 +67,12 @@ func IP(fl vali.FieldLevel) bool {
 	return false
 }
 
-func resourceCheck(checkers map[string]ResourceChecker, fl vali.FieldLevel) bool {
+// RegisterResChk to bind name with checker
+func RegisterResChk(name string, ic validator.ResourceChecker) {
+	_checkers[name] = ic
+}
+
+func resourceCheck(checkers map[string]validator.ResourceChecker, fl vali.FieldLevel) bool {
 	chk, ok := checkers[fl.Param()]
 	if !ok {
 		panic(fl.Param() + " not registered")
