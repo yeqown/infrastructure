@@ -1,4 +1,4 @@
-package ginic
+package v8
 
 import (
 	"log"

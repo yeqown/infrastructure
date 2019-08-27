@@ -9,7 +9,7 @@ collecting some tools those will be useful while coding a web application with G
 - [x] finish utils test cases
 - [ ] finish framework test cases
 - [x] finish gormic test cases
-- [ ] support `validator.v8`.`ResourceCheck`
+- [x] support `validator.v8`.`ResourceCheck`
 
 ## Golang Model Struct to Service Struct
 

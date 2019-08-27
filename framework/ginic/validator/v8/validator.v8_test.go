@@ -1,4 +1,4 @@
-package ginic_test
+package v8_test
 
 import (
 	"testing"
@@ -97,7 +97,7 @@ func Test_Validator_ResourceCheck(t *testing.T) {
 	v8.RegisterResChk("mgoUser", cusVali.NewMgoChecker(mgoDB, collName))
 
 	// validate struct
-	var validate = vali.New(nil)
+	var validate = vali.New(&vali.Config{})
 	validate.RegisterValidation("reschk", v8.DefaultResourceCheck)
 	if err = validate.Struct(foo); err != nil {
 		t.Log("validate foo got err: ", err)

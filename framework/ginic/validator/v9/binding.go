@@ -1,4 +1,4 @@
-package validator
+package v9
 
 import (
 	"github.com/yeqown/infrastructure/framework/ginic/validator"

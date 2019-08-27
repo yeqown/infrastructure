@@ -1,17 +1,22 @@
 package main
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
-	vali "gopkg.in/go-playground/validator.v9"
+
+	// vali "gopkg.in/go-playground/validator.v9"
+	vali "gopkg.in/go-playground/validator.v8"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 
-	"github.com/yeqown/infrastructure/framework/ginic/validator.v9"
+	// "github.com/yeqown/infrastructure/framework/ginic/validator/v9"
+	"github.com/yeqown/infrastructure/framework/ginic/validator"
+	v8 "github.com/yeqown/infrastructure/framework/ginic/validator/v8"
 	"github.com/yeqown/infrastructure/framework/gormic"
 	mgolib "github.com/yeqown/infrastructure/framework/mgo"
 	"github.com/yeqown/infrastructure/types"
@@ -75,7 +80,7 @@ func initResourceChecker(sqlID uint, mgoID bson.ObjectId) (*gorm.DB, *mgo.Databa
 
 // FooForm .
 type FooForm struct {
-	CountryID string `form:"mgo_id" binding:"required,reschk=mgoCountry"`
+	CountryID string `form:"country_id" binding:"required,reschk=mgoCountry"`
 	UserID    uint   `form:"user_id" binding:"required,reschk=sqlUser"`
 }
 
@@ -87,13 +92,15 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	validator.RegisterResChk("sqlUser", validator.NewMySQLChecker(sqlDB, "users"))
-	validator.RegisterResChk("mgoCountry", validator.NewMgoChecker(mgoDB, "contries"))
+
+	log.Printf("inserted id is: %d, %s\n", sqlID, mgoID)
+	v8.RegisterResChk("sqlUser", validator.NewMySQLChecker(sqlDB, "users"))
+	v8.RegisterResChk("mgoCountry", validator.NewMgoChecker(mgoDB, "contries"))
 
 	// [WIP: gin not support validator.v9 ...]
 	// register custom validation tag
 	_validate := binding.Validator.Engine().(*vali.Validate)
-	_validate.RegisterValidation("reschk", validator.DefaultResourceCheck)
+	_validate.RegisterValidation("reschk", v8.DefaultResourceCheck)
 
 	e := gin.Default()
 	e.GET("/resource/related_to", func(c *gin.Context) {
@@ -111,4 +118,8 @@ func main() {
 		})
 		return
 	})
+
+	if err := e.Run(":8080"); err != nil {
+		log.Fatal(err)
+	}
 }
