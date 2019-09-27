@@ -1,7 +1,19 @@
 # infrastructure
-collecting some tools those will be useful while coding a web application with Golang
 
-### TODO: 
+![](https://img.shields.io/badge/LICENSE-MIT-blue.svg) ![](https://goreportcard.com/badge/github.com/yeqown/infrastructure) [![](https://godoc.org/github.com/yeqown/infrastructure?status.svg)](http://godoc.org/github.com/yeqown/infrastructure)
+
+
+
+Collecting some utilities those will be useful when coding a web application with Go.
+
+## Features
+
+* Framework based `gorm`, `logrus`, `go-redis/redis`, `gin`, `etcd`, `mgo.v2`, `jwt-go`.
+* Health Checking
+* Lang utils, like: `MultiSorter`, `ConvertStruct2Map`, `WalkFolder`...
+* Some Types including: `Envrion`, `Database Cfg`, `Codes to response`...
+
+## Todos: 
 
 - [x] fill gormic package
 - [x] finish logger test cases
@@ -13,9 +25,17 @@ collecting some tools those will be useful while coding a web application with G
 
 ## Golang Model Struct to Service Struct
 
-> moved to [jademperor/go-tools](github.com/jademperor/go-tools)
+*moved to [jademperor/go-tools](github.com/jademperor/go-tools)*
 
+## Examples
 
-## Gin-resource-checker
-
+* [gin resource checker](examples/gin-resource-checker)
 > `gin` do not support validator.v9 for now ...
+
+    resource-validator to check if the resource exists.
+
+* [health checker](examples/health-checker)
+
+    checking healthy of `Mongo`, `Redis`, `SQL-DB`, `Service over TCP`.
+
+
