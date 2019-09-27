@@ -10,10 +10,11 @@ import (
 	"github.com/yeqown/infrastructure/framework/mgo"
 	"github.com/yeqown/infrastructure/framework/redigo"
 	"github.com/yeqown/infrastructure/types"
+
+	"github.com/yeqown/infrastructure/healthcheck"
 )
 
 func main() {
-	healthMgr := types.NewHealthMgr()
 	sqliteDB, err := gormic.ConnectSqlite3(&types.SQLite3Config{
 		Name: "../testdata/sqlite3.db",
 	})
@@ -40,11 +41,13 @@ func main() {
 		panic(err)
 	}
 
+	healthMgr := healthcheck.NewHealthMgr()
+	// TODO: notice there is a bug coded manually
 	_ = mgoDB
 
-	healthMgr.AddChecker("sqlite", gormic.NewHealthChecker(sqliteDB), 0)
-	healthMgr.AddChecker("mongo", mgo.NewHealthChecker(nil), 4)
-	healthMgr.AddChecker("redis", redigo.NewHealthChecker(redisC), 0)
+	healthMgr.AddChecker("sqlite", healthcheck.NewSQLChecker(sqliteDB.DB()), 0)
+	healthMgr.AddChecker("mongo", healthcheck.NewMgoChecker(nil), 4)
+	healthMgr.AddChecker("redis", healthcheck.NewRedisChecker(redisC), 0)
 
 	http.HandleFunc("/health", healthMgr.Handler())
 	log.Println("listening on :8080")

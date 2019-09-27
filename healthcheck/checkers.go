@@ -5,6 +5,7 @@ package healthcheck
 
 import (
 	"database/sql"
+	"net"
 
 	"github.com/go-redis/redis"
 	mgov2 "gopkg.in/mgo.v2"
@@ -69,4 +70,31 @@ func (hc *healthcheckerSQL) Check() HealthInfo {
 // NewSQLChecker .
 func NewSQLChecker(db *sql.DB) HealthChecker {
 	return &healthcheckerSQL{db: db}
+}
+
+type healthcheckerTCP struct {
+	// addr means [schema,default@tcp]://host:port
+	addr string
+}
+
+func (hc *healthcheckerTCP) Check() HealthInfo {
+	var info = NewHealthInfo()
+	info.Healthy = true
+
+	conn, err := net.Dial("tcp", hc.addr)
+	if err != nil {
+		// true: connect enconuter an error
+		info.Healthy = false
+		info.Meta["error"] = err.Error()
+	} else {
+		// true: connect ok
+		conn.Close()
+	}
+
+	return info
+}
+
+// NewTCPChecker .
+func NewTCPChecker(addr string) HealthChecker {
+	return &healthcheckerTCP{addr: addr}
 }

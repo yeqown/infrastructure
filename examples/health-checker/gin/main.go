@@ -9,11 +9,12 @@ import (
 	"github.com/yeqown/infrastructure/framework/gormic"
 	"github.com/yeqown/infrastructure/framework/mgo"
 	"github.com/yeqown/infrastructure/framework/redigo"
+	"github.com/yeqown/infrastructure/healthcheck"
 	"github.com/yeqown/infrastructure/types"
 )
 
 func main() {
-	healthMgr := types.NewHealthMgr()
+
 	sqliteDB, err := gormic.ConnectSqlite3(&types.SQLite3Config{
 		Name: "../testdata/sqlite3.db",
 	})
@@ -40,9 +41,10 @@ func main() {
 		panic(err)
 	}
 
-	healthMgr.AddChecker("sqlite", gormic.NewHealthChecker(sqliteDB), 0)
-	healthMgr.AddChecker("mongo", mgo.NewHealthChecker(mgoDB), 4)
-	healthMgr.AddChecker("redis", redigo.NewHealthChecker(redisC), 0)
+	healthMgr := healthcheck.NewHealthMgr()
+	healthMgr.AddChecker("sqlite", healthcheck.NewSQLChecker(sqliteDB.DB()), 0)
+	healthMgr.AddChecker("mongo", healthcheck.NewMgoChecker(mgoDB), 4)
+	healthMgr.AddChecker("redis", healthcheck.NewRedisChecker(redisC), 0)
 
 	e := gin.New()
 	e.GET("/health", healthMgr.GinHandler())
