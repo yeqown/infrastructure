@@ -45,3 +45,22 @@ func ConnectSqlite3(c *types.SQLite3Config) (*gorm.DB, error) {
 
 	return db, nil
 }
+
+type healthchecker struct {
+	db *gorm.DB
+}
+
+func (hc *healthchecker) Check() types.HealthInfo {
+	var info = types.NewHealthInfo()
+	info.Healthy = true
+	if err := hc.db.DB().Ping(); err != nil {
+		info.Healthy = false
+		info.Meta["error"] = err.Error()
+	}
+	return info
+}
+
+// NewHealthChecker .
+func NewHealthChecker(db *gorm.DB) types.HealthChecker {
+	return &healthchecker{db: db}
+}

@@ -32,3 +32,25 @@ func ConnectMgo(cfg *types.MgoConfig) (*mgov2.Database, error) {
 	session.SetSocketTimeout(time.Duration(5 * time.Second))
 	return session.DB(cfg.Database), nil
 }
+
+type healthchecker struct {
+	db *mgov2.Database
+}
+
+func (hc *healthchecker) Check() types.HealthInfo {
+	var info = types.NewHealthInfo()
+	info.Healthy = true
+
+	hc.db.Session.Refresh()
+
+	if err := hc.db.Session.Ping(); err != nil {
+		info.Healthy = false
+		info.Meta["error"] = err.Error()
+	}
+	return info
+}
+
+// NewHealthChecker .
+func NewHealthChecker(db *mgov2.Database) types.HealthChecker {
+	return &healthchecker{db: db}
+}
