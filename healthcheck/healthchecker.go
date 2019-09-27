@@ -1,4 +1,4 @@
-package types
+package healthcheck
 
 import (
 	"context"
@@ -32,35 +32,40 @@ type HealthChecker interface {
 	Check() HealthInfo
 }
 
-// Result .
-type Result struct {
-	Code int                   `json:"code"` // 0 means ok, else means error
+// httpResponse .
+type httpResponse struct {
+	// Code 0 means ok, else means error
+	Code int `json:"code"`
+	// Meta includes all checkers' `HealthInfo` result
 	Meta map[string]HealthInfo `json:"meta"`
 }
 
-type alias struct {
+type checkerWrapper struct {
+	// origin checker to do the actual checking work.
 	checker HealthChecker
-	name    string
+	// name to the wrapper to represent the output field too.
+	name string
+	// timeout duation of the checking work is supposed to be.
 	timeout time.Duration
 }
 
-// CheckingMgr .
-type CheckingMgr struct {
-	checkers []alias
+// HealthCheckingMgr .
+type HealthCheckingMgr struct {
+	checkerWrappers []checkerWrapper
 }
 
 // NewHealthMgr .
-func NewHealthMgr() *CheckingMgr {
-	return &CheckingMgr{
-		checkers: make([]alias, 0),
+func NewHealthMgr() *HealthCheckingMgr {
+	return &HealthCheckingMgr{
+		checkerWrappers: make([]checkerWrapper, 0),
 	}
 }
 
 const defaultTimeout = 10 * time.Second
 
 // AddChecker of mgr
-func (mgr *CheckingMgr) AddChecker(name string, hchecker HealthChecker, timeout int) {
-	a := alias{
+func (mgr *HealthCheckingMgr) AddChecker(name string, hchecker HealthChecker, timeout int) {
+	a := checkerWrapper{
 		checker: hchecker,
 		name:    name,
 		timeout: time.Duration(timeout) * time.Second,
@@ -68,23 +73,22 @@ func (mgr *CheckingMgr) AddChecker(name string, hchecker HealthChecker, timeout 
 	if timeout <= 0 {
 		a.timeout = defaultTimeout
 	}
-	mgr.checkers = append(mgr.checkers, a)
+	mgr.checkerWrappers = append(mgr.checkerWrappers, a)
 }
 
-func (mgr *CheckingMgr) doCheck() Result {
+func (mgr *HealthCheckingMgr) doCheck(ctx context.Context) httpResponse {
 	wg := sync.WaitGroup{}
-	wg.Add(len(mgr.checkers))
-	ch := make(chan HealthInfo, len(mgr.checkers))
+	wg.Add(len(mgr.checkerWrappers))
+	ch := make(chan HealthInfo, len(mgr.checkerWrappers))
 
-	for _, a := range mgr.checkers {
-		ctx, cancel := context.WithTimeout(context.Background(), a.timeout)
-		go func(ctx context.Context, a alias) {
+	for _, c := range mgr.checkerWrappers {
+		tctx, cancel := context.WithTimeout(ctx, c.timeout)
+		go func(ctx context.Context, w checkerWrapper) {
 			var info = NewHealthInfo()
-
 			defer wg.Done()
 			defer func() {
 				if r := recover(); r != nil {
-					info.name = a.name
+					info.name = w.name
 					info.Healthy = false
 					info.Meta["panic"] = r
 					info.Meta["stack"] = string(debug.Stack())
@@ -95,23 +99,23 @@ func (mgr *CheckingMgr) doCheck() Result {
 			select {
 			case <-ctx.Done():
 				// append timeout error
-				info.name = a.name
+				info.name = w.name
 				info.Healthy = false
 				info.Meta["error"] = "check timeout"
 			default:
-				info = a.checker.Check()
-				info.name = a.name
+				info = w.checker.Check()
+				info.name = w.name
 			}
 
 			ch <- info
 			cancel()
-		}(ctx, a)
+		}(tctx, c)
 	}
 
 	wg.Wait()
 	close(ch)
 	// merge check info
-	var result Result
+	var result httpResponse
 	result.Meta = make(map[string]HealthInfo)
 	for v := range ch {
 		if !v.Healthy && result.Code == 0 {
@@ -123,9 +127,9 @@ func (mgr *CheckingMgr) doCheck() Result {
 }
 
 // Handler .
-func (mgr *CheckingMgr) Handler() http.HandlerFunc {
+func (mgr *HealthCheckingMgr) Handler() http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
-		result := mgr.doCheck()
+		result := mgr.doCheck(req.Context())
 		byts, err := json.Marshal(result)
 		if err != nil {
 			fmt.Fprintf(w, err.Error())
@@ -136,9 +140,9 @@ func (mgr *CheckingMgr) Handler() http.HandlerFunc {
 }
 
 // GinHandler .
-func (mgr *CheckingMgr) GinHandler() gin.HandlerFunc {
+func (mgr *HealthCheckingMgr) GinHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		result := mgr.doCheck()
+		result := mgr.doCheck(c.Request.Context())
 		c.JSON(http.StatusOK, result)
 	}
 }
