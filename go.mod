@@ -19,6 +19,7 @@ require (
 	github.com/mattn/go-sqlite3 v1.10.0
 	github.com/pkg/errors v0.8.0
 	github.com/sirupsen/logrus v1.2.0
+	github.com/streadway/amqp v0.0.0-20190827072141-edfb9018d271
 	go.etcd.io/etcd v0.0.0-20181022230727-86b933311d23
 	gopkg.in/go-playground/validator.v8 v8.18.2
 	gopkg.in/go-playground/validator.v9 v9.29.1

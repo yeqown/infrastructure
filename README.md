@@ -38,4 +38,6 @@ Collecting some utilities those will be useful when coding a web application wit
 
     checking healthy of `Mongo`, `Redis`, `SQL-DB`, `Service over TCP`.
 
+* [amqp wrapper](examples/amqp-wrapper)
 
+    wrap `amqp.Connection` with reconnection ability.
