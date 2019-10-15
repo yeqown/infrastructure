@@ -32,7 +32,8 @@ type Wrapper struct {
 	channel       *amqp.Channel
 	done          chan bool
 	changeConn    chan struct{}
-	notifyClose   chan *amqp.Error
+	chNotify      chan *amqp.Error // channel notify
+	connNotify    chan *amqp.Error // conn notify
 	// notifyConfirm chan amqp.Confirmation
 	isConnected bool
 }
@@ -42,6 +43,13 @@ func (w *Wrapper) handleReconnect() {
 	for {
 		// w.isConnected = false
 		if !w.isConnected {
+			// for err := range w.chNotify {
+			// 	log.Println(err)
+			// }
+			// for err := range w.connNotify {
+			// 	log.Println(err)
+			// }
+
 			log.Println("Attempting to connect")
 			var (
 				connected = false
@@ -63,8 +71,11 @@ func (w *Wrapper) handleReconnect() {
 		case <-w.done:
 			println("w.done")
 			return
-		case err := <-w.notifyClose:
-			log.Printf("notifyClose: %v", err)
+		case err := <-w.chNotify:
+			log.Printf("channel close notify: %v", err)
+			w.isConnected = false
+		case err := <-w.connNotify:
+			log.Printf("conn close notify: %v", err)
 			w.isConnected = false
 		}
 		time.Sleep(reconnectDetectDur)
@@ -77,6 +88,7 @@ func (w *Wrapper) connect() (bool, error) {
 	if err != nil {
 		return false, err
 	}
+
 	ch, err := conn.Channel()
 	if err != nil {
 		return false, err
@@ -94,15 +106,14 @@ func (w *Wrapper) connect() (bool, error) {
 // 监听Rabbit channel的状态
 func (w *Wrapper) changeConnection(connection *amqp.Connection, channel *amqp.Channel) {
 	w.connection = connection
+	w.connNotify = make(chan *amqp.Error)
+	w.connection.NotifyClose(w.chNotify)
+
 	w.channel = channel
+	w.chNotify = make(chan *amqp.Error)
+	w.channel.NotifyClose(w.chNotify)
 
 	w.changeConn <- struct{}{}
-
-	// channel 没有必要主动关闭。如果没有协程使用它，它会被垃圾收集器收拾
-	w.notifyClose = make(chan *amqp.Error)
-	// w.notifyConfirm = make(chan amqp.Confirmation)
-	w.channel.NotifyClose(w.notifyClose)
-	// w.channel.NotifyPublish(w.notifyConfirm)
 }
 
 // Conn .

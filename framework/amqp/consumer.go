@@ -51,7 +51,6 @@ func (w *Wrapper) Consume(
 					log.Printf("consume msg error: %v", err)
 				}
 			}
-			log.Println("delivery was cleared")
 		}
 	}
 }
