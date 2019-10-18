@@ -21,12 +21,15 @@ func (w *Wrapper) Consume(
 		err      error
 	)
 
+	w.hasConsumer = true
+
 	for {
 		select {
 		case <-w.changeConn:
 			log.Println("evt 'changeConn' triggered.")
-			if ch, err = w.Channel(10 * time.Second); err != nil {
-				panic(err)
+			if ch, err = w.Channel(5 * time.Second); err != nil {
+				log.Println("could not get channel for now with error: ", err)
+				break
 			}
 			if delivery, err = ch.Consume(
 				queue,     // queue
@@ -37,18 +40,21 @@ func (w *Wrapper) Consume(
 				noWait,    // no-wait
 				args,      // args
 			); err != nil {
-				panic(err)
+				log.Println("could not start consuming with error: ", err)
+				break
 			}
-			log.Println("init comsumer done")
+			log.Println("initial comsumer finished")
 		default:
 			if !w.isConnected || delivery == nil {
+				// true: wrapper has not connected or consumer has not initialized
+				// must to wait `changeConn` evt
 				time.Sleep(1 * time.Second)
 				break
 			}
-			// 如果异常失去链接，delivery 会被关闭，默认情况下会一直从 delivery 通道中获取数据
+			// delivery will be closed, then this `range` will be finished
 			for d := range delivery {
 				if err := handler(d); err != nil {
-					log.Printf("consume msg error: %v", err)
+					log.Printf("could not consume message: %v with error: %v", d, err)
 				}
 			}
 		}

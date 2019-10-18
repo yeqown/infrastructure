@@ -34,22 +34,15 @@ type Wrapper struct {
 	changeConn    chan struct{}
 	chNotify      chan *amqp.Error // channel notify
 	connNotify    chan *amqp.Error // conn notify
-	// notifyConfirm chan amqp.Confirmation
-	isConnected bool
+
+	isConnected bool // mark wrapper is connected to server
+	hasConsumer bool // mark wrapper is used by a consumer
 }
 
 // handleReconnct
 func (w *Wrapper) handleReconnect() {
 	for {
-		// w.isConnected = false
 		if !w.isConnected {
-			// for err := range w.chNotify {
-			// 	log.Println(err)
-			// }
-			// for err := range w.connNotify {
-			// 	log.Println(err)
-			// }
-
 			log.Println("Attempting to connect")
 			var (
 				connected = false
@@ -69,7 +62,7 @@ func (w *Wrapper) handleReconnect() {
 
 		select {
 		case <-w.done:
-			println("w.done")
+			println("evt `w.done` triggered")
 			return
 		case err := <-w.chNotify:
 			log.Printf("channel close notify: %v", err)
@@ -99,21 +92,24 @@ func (w *Wrapper) connect() (bool, error) {
 	}
 	w.isConnected = true
 	w.changeConnection(conn, ch)
-	log.Println("Connected!")
 	return true, nil
 }
 
 // 监听Rabbit channel的状态
 func (w *Wrapper) changeConnection(connection *amqp.Connection, channel *amqp.Channel) {
 	w.connection = connection
-	w.connNotify = make(chan *amqp.Error)
+	w.connNotify = make(chan *amqp.Error, 1)
 	w.connection.NotifyClose(w.chNotify)
 
 	w.channel = channel
-	w.chNotify = make(chan *amqp.Error)
+	w.chNotify = make(chan *amqp.Error, 1)
 	w.channel.NotifyClose(w.chNotify)
 
-	w.changeConn <- struct{}{}
+	// TOFIX: only producer will be blocked here
+	if w.hasConsumer {
+		// true: cause only consumer will be  notify for now.
+		w.changeConn <- struct{}{}
+	}
 }
 
 // Conn .
