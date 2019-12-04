@@ -98,7 +98,7 @@ func Benchmark_builtin_Convert_reverse(b *testing.B) {
 
 func Benchmark_unsafe_Convert_reverse(b *testing.B) {
 	/*
-				goos: darwin
+		goos: darwin
 		goarch: amd64
 		pkg: github.com/yeqown/infrastructure/pkg/lang
 		Benchmark_unsafe_Convert_reverse-4   	1000000000	         0.349 ns/op	       0 B/op	       0 allocs/op
@@ -115,5 +115,54 @@ func Benchmark_unsafe_Convert_reverse(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		s2 = BytesToString(tar)
 		_ = s2
+	}
+}
+
+func Benchmark_stringCmp(b *testing.B) {
+	/*
+		goos: darwin
+		goarch: amd64
+		pkg: github.com/yeqown/infrastructure/pkg/lang
+		Benchmark_stringCmp-4   	579905006	         2.01 ns/op	       0 B/op	       0 allocs/op
+		PASS
+		ok  	github.com/yeqown/infrastructure/pkg/lang	2.699s
+		Success: Benchmarks passed.
+	*/
+	var (
+		s1 = "teststring"
+		s2 string
+	)
+
+	for i := 0; i < b.N; i++ {
+		s2 = "teststring"
+		if strings.Compare(s1, s2) != 0 {
+			b.Error("not equal, failed")
+			b.FailNow()
+		}
+	}
+}
+
+func Benchmark_bytesCmp(b *testing.B) {
+	/*
+		goos: darwin
+		goarch: amd64
+		pkg: github.com/yeqown/infrastructure/pkg/lang
+		Benchmark_bytesCmp-4   	266996424	         4.80 ns/op	       0 B/op	       0 allocs/op
+		PASS
+		ok  	github.com/yeqown/infrastructure/pkg/lang	2.446s
+		Success: Benchmarks passed.
+	*/
+	var (
+		s1   = "teststring"
+		tar1 = StringToBytes(s1)
+		tar2 []byte
+	)
+
+	for i := 0; i < b.N; i++ {
+		tar2 = StringToBytes(s1)
+		if !bytes.Equal(tar1, tar2) {
+			b.Error("not equal, failed")
+			b.FailNow()
+		}
 	}
 }

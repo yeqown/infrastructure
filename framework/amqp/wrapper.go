@@ -99,7 +99,7 @@ func (w *Wrapper) connect() (bool, error) {
 func (w *Wrapper) changeConnection(connection *amqp.Connection, channel *amqp.Channel) {
 	w.connection = connection
 	w.connNotify = make(chan *amqp.Error, 1)
-	w.connection.NotifyClose(w.chNotify)
+	w.connection.NotifyClose(w.connNotify)
 
 	w.channel = channel
 	w.chNotify = make(chan *amqp.Error, 1)
