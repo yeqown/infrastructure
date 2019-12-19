@@ -7,3 +7,4 @@ testdata
 .DS_Store
 types.go
 start-etcd.sh
+sqlite3.db
