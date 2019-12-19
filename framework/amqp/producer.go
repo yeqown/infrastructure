@@ -8,7 +8,7 @@ import (
 
 // Produce .
 func (w *Wrapper) Produce(exchange, key string, mandatory, immediate bool, dat []byte) error {
-	ch, err := w.Channel(10 * time.Second)
+	ch, err := w.Channel(5 * time.Second)
 	if err != nil {
 		return err
 	}

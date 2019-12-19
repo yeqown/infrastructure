@@ -47,7 +47,7 @@ func main() {
 	w := amqpw.New(
 		"amqp://username:password@host:port",
 		amqp.Config{
-			Vhost:     "mq.class100.com",
+			Vhost:     "vhost",
 			Heartbeat: 2 * time.Second,
 		}, apply)
 

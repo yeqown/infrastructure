@@ -32,15 +32,16 @@ type Wrapper struct {
 	channel       *amqp.Channel
 	done          chan bool
 	changeConn    chan struct{}
-	notifyClose   chan *amqp.Error
-	// notifyConfirm chan amqp.Confirmation
-	isConnected bool
+	chNotify      chan *amqp.Error // channel notify
+	connNotify    chan *amqp.Error // conn notify
+
+	isConnected bool // mark wrapper is connected to server
+	hasConsumer bool // mark wrapper is used by a consumer
 }
 
 // handleReconnct
 func (w *Wrapper) handleReconnect() {
 	for {
-		// w.isConnected = false
 		if !w.isConnected {
 			log.Println("Attempting to connect")
 			var (
@@ -61,10 +62,13 @@ func (w *Wrapper) handleReconnect() {
 
 		select {
 		case <-w.done:
-			println("w.done")
+			println("evt `w.done` triggered")
 			return
-		case err := <-w.notifyClose:
-			log.Printf("notifyClose: %v", err)
+		case err := <-w.chNotify:
+			log.Printf("channel close notify: %v", err)
+			w.isConnected = false
+		case err := <-w.connNotify:
+			log.Printf("conn close notify: %v", err)
 			w.isConnected = false
 		}
 		time.Sleep(reconnectDetectDur)
@@ -77,6 +81,7 @@ func (w *Wrapper) connect() (bool, error) {
 	if err != nil {
 		return false, err
 	}
+
 	ch, err := conn.Channel()
 	if err != nil {
 		return false, err
@@ -87,22 +92,24 @@ func (w *Wrapper) connect() (bool, error) {
 	}
 	w.isConnected = true
 	w.changeConnection(conn, ch)
-	log.Println("Connected!")
 	return true, nil
 }
 
 // 监听Rabbit channel的状态
 func (w *Wrapper) changeConnection(connection *amqp.Connection, channel *amqp.Channel) {
 	w.connection = connection
+	w.connNotify = make(chan *amqp.Error, 1)
+	w.connection.NotifyClose(w.connNotify)
+
 	w.channel = channel
+	w.chNotify = make(chan *amqp.Error, 1)
+	w.channel.NotifyClose(w.chNotify)
 
-	w.changeConn <- struct{}{}
-
-	// channel 没有必要主动关闭。如果没有协程使用它，它会被垃圾收集器收拾
-	w.notifyClose = make(chan *amqp.Error)
-	// w.notifyConfirm = make(chan amqp.Confirmation)
-	w.channel.NotifyClose(w.notifyClose)
-	// w.channel.NotifyPublish(w.notifyConfirm)
+	// TOFIX: only producer will be blocked here
+	if w.hasConsumer {
+		// true: cause only consumer will be  notify for now.
+		w.changeConn <- struct{}{}
+	}
 }
 
 // Conn .

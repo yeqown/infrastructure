@@ -20,16 +20,18 @@ type Join struct {
 
 // PagingParam 分页参数
 type PagingParam struct {
-	DB      *gorm.DB    // DB Data Source
-	Limit   uint        // Limit
-	Offset  uint        // Offset
-	Select  string      // Select
-	OrderBy []string    // Orders
-	GroupBy string      // Group
-	Joins   []Join      // Joins
-	Wheres  []Where     // Wheres
-	Not     interface{} // Not
-	ShowSQL bool        // Debug mode
+	DB       *gorm.DB    // DB Data Source
+	Limit    uint        // Limit
+	Offset   uint        // Offset
+	Select   string      // Select
+	OrderBy  []string    // Orders
+	GroupBy  string      // Group
+	Joins    []Join      // Joins
+	Wheres   []Where     // Wheres
+	ORs      []Where     // ORs
+	Not      interface{} // Not
+	Preloads []string    // Preload
+	ShowSQL  bool        // Debug mode
 	// CountDataSource interface{} //
 }
 
@@ -44,10 +46,6 @@ type Paginator struct {
 func Pagging(p *PagingParam, out interface{}) *Paginator {
 	db := p.DB
 
-	if p.ShowSQL {
-		db = db.Debug()
-	}
-
 	if p.Limit == 0 {
 		p.Limit = 10
 	}
@@ -59,6 +57,16 @@ func Pagging(p *PagingParam, out interface{}) *Paginator {
 	if len(p.Joins) > 0 {
 		for _, j := range p.Joins {
 			db = db.Joins(j.Query, j.Args...)
+		}
+	}
+
+	if len(p.ORs) > 0 {
+		for _, w := range p.ORs {
+			if w.Value != nil {
+				db = db.Or(w.Key, w.Value)
+			} else {
+				db = db.Or(w.Key)
+			}
 		}
 	}
 
@@ -87,19 +95,21 @@ func Pagging(p *PagingParam, out interface{}) *Paginator {
 	}
 
 	var (
-		paginator Paginator
+		paginator = new(Paginator)
 	)
 
-	if err := db.Model(out).
-		Count(&paginator.Total).Error; err != nil {
-		paginator.Error = err
-		return &paginator
+	if paginator.Error = db.Model(out).
+		Count(&paginator.Total).Error; paginator.Error != nil {
+		return paginator
 	}
 
-	paginator.Error = db.
-		Limit(p.Limit).
-		Offset(p.Limit).
-		Find(paginator.Records).Error
+	// with preloads
+	for _, preloadColumn := range p.Preloads {
+		db = db.Preload(preloadColumn)
+	}
 
-	return &paginator
+	paginator.Error = db.Limit(p.Limit).Offset(p.Offset).Find(out).Error
+	paginator.Records = out
+
+	return paginator
 }
