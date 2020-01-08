@@ -3,7 +3,7 @@
 a small tool to open ssh tunnel.
 
 ```sh
-tunnel-helper -c path/to/tunnerlrc
+tunnel-helper -c path/to/tunnelrc
 ```
 
 tunnelrc file format:

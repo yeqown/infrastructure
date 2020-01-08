@@ -117,13 +117,13 @@ func (tunnel *SSHTunnel) Start() error {
 
 // just do the work like proxy to transfer data from local to remote
 func (tunnel *SSHTunnel) forward(localConn net.Conn) {
-	serverConn, err := ssh.Dial("tcp", tunnel.ServerAddr, tunnel.SSHConfig)
+	serverSSHClient, err := ssh.Dial("tcp", tunnel.ServerAddr, tunnel.SSHConfig)
 	if err != nil {
 		logger.Infof(tunnel.name()+" server dial error: %s", err)
 		return
 	}
 	logger.Infof(tunnel.name()+" connected to server=%s (1 of 2)", tunnel.ServerAddr)
-	remoteConn, err := serverConn.Dial("tcp", tunnel.RemoteAddr)
+	remoteConn, err := serverSSHClient.Dial("tcp", tunnel.RemoteAddr)
 	if err != nil {
 		logger.Infof(tunnel.name()+" remote dial error: %s", err)
 		return
