@@ -8,3 +8,5 @@ testdata
 types.go
 start-etcd.sh
 sqlite3.db
+app
+.tunnelrc
