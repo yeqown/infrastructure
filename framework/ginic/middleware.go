@@ -7,7 +7,10 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-redis/redis"
+
 	logger "github.com/yeqown/infrastructure/framework/logrus-logger"
+	"github.com/yeqown/infrastructure/pkg/session"
 )
 
 // Recovery is a middleware to record each panic into file
@@ -94,5 +97,77 @@ func CORS() gin.HandlerFunc {
 		}
 
 		c.Next()
+	}
+}
+
+const (
+	// SessionKey .
+	SessionKey = "session"
+	// HTTPTokenHeaderName .
+	HTTPTokenHeaderName = "X-Token"
+
+	bRefreshTokenAutomatic = false // 是否主动更新token过期时间
+)
+
+// FactoryToIToken .
+type FactoryToIToken func() session.IToken
+
+// AuthJWT .
+func AuthJWT(mgr session.ITokenManager, factory FactoryToIToken) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		tokString := c.Request.Header.Get(HTTPTokenHeaderName)
+		if tokString == "" {
+			// true: 没有在请求头中携带token头，提示错误
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+				"code": -4,
+				"msg":  "用户认证标识错误",
+			})
+			return
+		}
+
+		headerTok := factory()
+		if err := mgr.PraseToken(tokString, headerTok); err != nil {
+			// true: 解析失败或者token内容非法
+			logger.Log.WithField("token", tokString).Warnf("mgr.PraseToken() failed, err=%v", err)
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+				"code": -4,
+				"msg":  "用户认证标识非法",
+			})
+			return
+		}
+
+		// 是否过期
+		cacheTok := factory()
+		if err := mgr.Get(headerTok.TokenKey(), cacheTok); err != nil {
+			if err == redis.Nil {
+				// true: key missed
+				c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+					"code": -5,
+					"msg":  "用户认证标识已过期，请重新登录",
+				})
+				return
+			}
+
+			// redis 异常
+			logger.Log.WithField("token", tokString).Warnf("mgr.PraseToken() failed to cmp with redis, err=%v", err)
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+				"code": -1,
+				"msg":  err.Error(),
+			})
+			return
+		}
+
+		if bRefreshTokenAutomatic {
+			// true: 主动更新token过期时间
+			// 刷新token过期时间（可选）
+			if cacheTok.Expiration() < session.OneWeekExpired {
+				cacheTok.SetExpiration(session.OneMonthExpired)
+				if err := mgr.Refresh(cacheTok, session.OneMonthExpired); err != nil {
+					logger.Log.Warnf("mgr.Refresh() failed, err=%v", err)
+				}
+			}
+		}
+
+		c.Set(SessionKey, cacheTok)
 	}
 }

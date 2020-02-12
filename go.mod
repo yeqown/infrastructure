@@ -1,28 +1,18 @@
 module github.com/yeqown/infrastructure
 
 require (
-	github.com/denisenkom/go-mssqldb v0.0.0-20190515213511-eb9f6a1743f3 // indirect
+	git.class100.com/backend/infras v1.1.1
+	git.class100.com/backend/user-service v1.4.1
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
-	github.com/erikstmartin/go-testdb v0.0.0-20160219214506-8d10e4a1bae5 // indirect
-	github.com/garyburd/redigo v0.0.0-20180404160726-569eae59ada9 // indirect
-	github.com/gin-gonic/gin v0.0.0-20181023025633-c65e5efc9a0a
-	github.com/go-playground/locales v0.12.1 // indirect
-	github.com/go-playground/universal-translator v0.16.0 // indirect
+	github.com/gin-gonic/gin v1.4.0
 	github.com/go-redis/redis v6.15.2+incompatible
-	github.com/go-sql-driver/mysql v1.4.1 // indirect
-	github.com/jinzhu/gorm v0.0.0-20180818231433-32455088f24d
-	github.com/jinzhu/inflection v0.0.0-20180308033659-04140366298a // indirect
-	github.com/jinzhu/now v1.0.0 // indirect
-	github.com/kr/pretty v0.1.0 // indirect
-	github.com/leodido/go-urn v1.1.0 // indirect
-	github.com/lib/pq v1.1.1 // indirect
-	github.com/mattn/go-sqlite3 v1.10.0 // indirect
-	github.com/pkg/errors v0.8.0
-	github.com/sirupsen/logrus v1.2.0
+	github.com/jinzhu/gorm v1.9.9
+	github.com/pkg/errors v0.8.1
+	github.com/sirupsen/logrus v1.4.1
 	github.com/streadway/amqp v0.0.0-20190827072141-edfb9018d271
 	github.com/yeqown/log v0.0.0-20180826102730-db9c5471a87b
 	go.etcd.io/etcd v0.0.0-20181022230727-86b933311d23
-	golang.org/x/crypto v0.0.0-20190325154230-a5d413f7728c
+	golang.org/x/crypto v0.0.0-20190605123033-f99c8df09eb5
 	gopkg.in/go-playground/validator.v8 v8.18.2
 	gopkg.in/go-playground/validator.v9 v9.29.1
 	gopkg.in/mgo.v2 v2.0.0-20180705113604-9856a29383ce
