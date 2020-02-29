@@ -3,6 +3,7 @@ module github.com/yeqown/infrastructure
 require (
 	git.class100.com/backend/infras v1.1.1
 	git.class100.com/backend/user-service v1.4.1
+	github.com/AlecAivazis/survey/v2 v2.0.5
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gin-gonic/gin v1.4.0
 	github.com/go-redis/redis v6.15.2+incompatible
@@ -13,6 +14,7 @@ require (
 	github.com/yeqown/log v0.0.0-20180826102730-db9c5471a87b
 	go.etcd.io/etcd v0.0.0-20181022230727-86b933311d23
 	golang.org/x/crypto v0.0.0-20190605123033-f99c8df09eb5
+	golang.org/x/image v0.0.0-20200119044424-58c23975cae1
 	gopkg.in/go-playground/validator.v8 v8.18.2
 	gopkg.in/go-playground/validator.v9 v9.29.1
 	gopkg.in/mgo.v2 v2.0.0-20180705113604-9856a29383ce
