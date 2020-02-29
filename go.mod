@@ -1,12 +1,11 @@
 module github.com/yeqown/infrastructure
 
 require (
-	git.class100.com/backend/infras v1.1.1
-	git.class100.com/backend/user-service v1.4.1
 	github.com/AlecAivazis/survey/v2 v2.0.5
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gin-gonic/gin v1.4.0
 	github.com/go-redis/redis v6.15.2+incompatible
+	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0
 	github.com/jinzhu/gorm v1.9.9
 	github.com/pkg/errors v0.8.1
 	github.com/sirupsen/logrus v1.4.1
@@ -22,4 +21,4 @@ require (
 
 go 1.13
 
-replace github.com/yeqown/log => ../log
+// replace github.com/yeqown/log => ../log
