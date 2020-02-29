@@ -1,35 +1,26 @@
-// +build windows
+// +build darwin
 
 // Package fontutil .
 package fontutil
 
 import (
-	"os"
 	"path"
 
 	"github.com/yeqown/infrastructure/pkg/fs"
 )
 
 var (
-	winFontPath string
+	osxFontPath = path.Join("/System", "Library", "Fonts")
 )
-
-func init() {
-	homedir, err := os.UserHomeDir()
-	if err != nil {
-		panic(err)
-	}
-	winFontPath = path.Join(homedir, "AppData", "Local", "Microsoft", "Windows", "Fonts")
-}
 
 // GetSysDefaultFont . return current system default font
 func GetSysDefaultFont() string {
-	return ""
+	return "STHeiti Light.ttc"
 }
 
 // GetSysFontList get font list from curretn system
 func GetSysFontList() (fonts []string) {
-	files := fs.ListFiles(winFontPath, fs.IgnoreDirFilter())
+	files := fs.ListFiles(osxFontPath, fs.IgnoreDirFilter())
 	if len(files) != 0 {
 		fonts = make([]string, len(files))
 		// true: handle files
@@ -43,5 +34,5 @@ func GetSysFontList() (fonts []string) {
 
 // AssemFontPath .
 func AssemFontPath(fontfile string) string {
-	return path.Join(winFontPath, fontfile)
+	return path.Join(osxFontPath, fontfile)
 }

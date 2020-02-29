@@ -10,3 +10,5 @@ start-etcd.sh
 sqlite3.db
 app
 .tunnelrc
+*.jpg
+*.png

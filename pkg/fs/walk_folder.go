@@ -11,7 +11,7 @@ type Filter func(info os.FileInfo) bool
 
 // ListFiles .
 func ListFiles(root string, filter Filter) []string {
-	filenames := make([]string, 0)
+	filenames := make([]string, 0, 50)
 	root, _ = filepath.Abs(root)
 
 	filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
