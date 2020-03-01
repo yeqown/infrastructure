@@ -5,6 +5,7 @@ import (
 	"image/color"
 	"image/draw"
 	"io/ioutil"
+	"unicode/utf8"
 
 	"github.com/golang/freetype"
 	"github.com/yeqown/infrastructure/pkg/fontutil"
@@ -44,7 +45,7 @@ type text struct {
 // newtext .
 // FIXME: conents be changed upper case of first character
 func newtext(x, y, size int, family, color, content string) *text {
-	log.Info(x, y, size, "family=", family, "content=", content)
+	log.Info(x, y, size, "family=", family, "content=", content, "color=", color)
 
 	col, ok := defaultColors[color]
 	if !ok {
@@ -58,24 +59,33 @@ func newtext(x, y, size int, family, color, content string) *text {
 		Size:          size,
 		Content:       content,
 		AutoCalculate: false,
-		DPI:           size, // FIXME: how to set DPI
+		DPI:           72, // FIXME: how to set DPI
 		color:         col,
 	}
 }
 
-// TODO:
-func (t *text) autoCalculate(bgH int) {
-	if !t.AutoCalculate {
-		return
-	}
-	t.Size = bgH / 4
-	t.X = (bgH - t.Size) / 2
-	t.Y = 100 // TODO: auto calc
+// text px length
+func (t *text) widthPX() int {
+	runeCnt := utf8.RuneCountInString(t.Content)
+	asciiCnt := len(t.Content) - runeCnt
+	log.Info("runeCnt=", runeCnt, "asciiCnt=", asciiCnt)
+	return (runeCnt*t.Size + (asciiCnt*t.Size)/2) / 2
+}
+
+// calc x and y
+func (t *text) autoCalculate(bgW, bgH int) {
+	t.X = (bgW - t.widthPX()) / 2
+	t.Y = (bgH - t.Size) / 2
+	log.Info("x=", t.X, "y=", t.Y, "calcedwidth=", t.widthPX())
+
+	// if !t.AutoCalculate {
+	// 	return
+	// }
+	// t.Size = bgH / 4
 }
 
 func (t *text) draw(dst *image.RGBA) (err error) {
-	log.Infof("text=%v", *t)
-
+	// log.Infof("text=%v", *t)
 	var (
 		fontByts []byte
 	)
@@ -96,9 +106,9 @@ func (t *text) draw(dst *image.RGBA) (err error) {
 	ctx.SetFont(font)
 	ctx.SetFontSize(float64(t.Size))
 	ctx.SetClip(dst.Bounds())
-	ctx.SetDst(dst)                       // background image setting here
-	ctx.SetSrc(image.NewUniform(t.color)) // font color setting
-	ctx.DrawString(t.Content, freetype.Pt(t.X, t.Y+t.Size))
+	ctx.SetDst(dst)                                         // background image setting here
+	ctx.SetSrc(image.NewUniform(t.color))                   // font color setting
+	ctx.DrawString(t.Content, freetype.Pt(t.X, t.Y+t.Size)) // set text position
 
 	return nil
 }
@@ -112,19 +122,10 @@ func newbackground(col string, w, h int) *background {
 		rgb = defaultColors["white"]
 	}
 
-	// W, H with defualt value
-	if w == 0 {
-		w = 1600
-	}
-
-	if h == 0 {
-		h = 900
-	}
-
 	return &background{
 		color: rgb,
-		H:     h,
-		W:     w,
+		H:     h, // default 1600
+		W:     w, // default 300
 	}
 }
 
@@ -135,9 +136,12 @@ type background struct {
 	H     int // height
 }
 
-// TODO: finish this part
 func (bg *background) draw(dst *image.RGBA) error {
 	col := image.NewUniform(bg.color)
 	draw.Draw(dst, dst.Bounds(), col, image.ZP, draw.Src)
 	return nil
+}
+
+func openLog() {
+	log.SetLogLevel(log.LevelInfo)
 }

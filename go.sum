@@ -277,6 +277,8 @@ github.com/xiang90/probing v0.0.0-20160813154853-07dd2e8dfe18/go.mod h1:UETIi67q
 github.com/yeqown/infrastructure v0.3.3/go.mod h1:7I1bFm/H4FUnpKbu+StsW6ETbphvvEvCcqht+fVgvRc=
 github.com/yeqown/log v0.0.0-20180826102730-db9c5471a87b h1:9Nr6lsgJUdiErYy3pL6bMbaiMQQfsMpbH0O8ZPHpUYA=
 github.com/yeqown/log v0.0.0-20180826102730-db9c5471a87b/go.mod h1:6uE9OqfiiUicvMIz8d3wzS0DtWpFgwNZqGCwlEUwgTs=
+github.com/yeqown/log v0.0.0-20200108034421-d68941cd8fd3 h1:GId88OMuTfxYpNUFHsa9ohmUzbLlJ+JS531bWLgF9ew=
+github.com/yeqown/log v0.0.0-20200108034421-d68941cd8fd3/go.mod h1:Xaotw98GKyumVdy3AU+SoXl8UJkJy4XZQ7v12cw06yA=
 go.etcd.io/bbolt v1.3.1-etcd.7 h1:M0l89sIuZ+RkW0rLbUsmxescVzLwLUs+Kvks+0jeHdM=
 go.etcd.io/bbolt v1.3.1-etcd.7/go.mod h1:IbVyRI1SCnLcuJnV2u8VeU0CEYM7e686BmAb1XKL+uU=
 go.etcd.io/etcd v0.0.0-20181022230727-86b933311d23 h1:0LS7CnCOWmbpisFivHyquACsCmGkzBnBTLdgJno9SBg=

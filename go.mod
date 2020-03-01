@@ -10,7 +10,7 @@ require (
 	github.com/pkg/errors v0.8.1
 	github.com/sirupsen/logrus v1.4.1
 	github.com/streadway/amqp v0.0.0-20190827072141-edfb9018d271
-	github.com/yeqown/log v0.0.0-20180826102730-db9c5471a87b
+	github.com/yeqown/log v0.0.0-20200108034421-d68941cd8fd3
 	go.etcd.io/etcd v0.0.0-20181022230727-86b933311d23
 	golang.org/x/crypto v0.0.0-20190605123033-f99c8df09eb5
 	golang.org/x/image v0.0.0-20200119044424-58c23975cae1

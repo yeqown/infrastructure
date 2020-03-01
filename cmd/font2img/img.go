@@ -11,6 +11,7 @@ import (
 	"github.com/yeqown/log"
 )
 
+// ImgFormat .
 type ImgFormat string
 
 const (
@@ -50,7 +51,7 @@ func (img *Img) init() {
 	img.rgba = image.NewRGBA(image.Rect(0, 0, img.bg.W, img.bg.H))
 
 	// calculate the parameters of text position and options
-	img.txt.autoCalculate(img.bg.H)
+	img.txt.autoCalculate(img.bg.W, img.bg.H)
 }
 
 // img process

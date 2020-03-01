@@ -6,6 +6,11 @@ import (
 	"github.com/yeqown/log"
 )
 
+func init() {
+	// default ignore all logs
+	log.SetLogLevel(log.LevelFatal)
+}
+
 func main() {
 	var (
 		bgQA      = bgQsAnswer{}
@@ -127,7 +132,7 @@ var outputQs = []*survey.Question{
 		Name: "filename",
 		Prompt: &survey.Input{
 			Message: "Input output filename:",
-			Default: "untiltled",
+			Default: "untitled",
 		},
 		Validate:  survey.Required,
 		Transform: survey.Title,
