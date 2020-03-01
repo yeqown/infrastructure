@@ -4,13 +4,13 @@ Providing intreactive prompts to help people who want to post blog but could not
 
 it has following features:
 
-[x] font to img (basic feature)
-[x] image format suport multi types(jpeg, png)
-[x] background config support
-[x] custom font choosing
-[x] font config support (color, size, bold, etc)
-[ ] more color settings 
-[ ] background with image
+    [x] font to img (basic feature)
+    [x] image format suport multi types(jpeg, png)
+    [x] background config support
+    [x] custom font choosing
+    [x] font config support (color, size, bold, etc)
+    [ ] more color settings 
+    [ ] background with image
 
 ## Get Started
 
