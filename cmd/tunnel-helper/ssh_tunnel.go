@@ -21,17 +21,33 @@ type SSHConfig struct {
 
 // TunnelConfig .
 type TunnelConfig struct {
+	Ident      string     `json:"ident"`
 	SSH        *SSHConfig `json:"ssh"`
 	LocalPort  int        `json:"localPort"`
 	RemoteHost string     `json:"remoteHost"`
 	RemotePort int        `json:"remotePort"`
 }
 
+var (
+	// this will never be released manually,
+	// but it would be cleared when the program finished
+	identUnique = make(map[string]bool, 4)
+)
+
 // Valid .
 func (c *TunnelConfig) Valid() error {
-	if c.SSH == nil {
-		return errors.New("empty ssh config")
+	if c.Ident == "" {
+		return errors.New("empty tunnel identify")
 	}
+
+	if _, ok := identUnique[c.Ident]; ok {
+		return errors.New("duplicate tunnel ident=" + c.Ident)
+	}
+	identUnique[c.Ident] = true
+
+	// if c.SSH == nil {
+	// 	return errors.New("empty ssh config")
+	// }
 
 	if c.LocalPort == 0 {
 		// pass
@@ -70,7 +86,7 @@ func NewSSHTunnel(tunnelConfig *TunnelConfig) *SSHTunnel {
 
 	if sshConfig.PrivateKeyFile != "" {
 		// true: privateKey specified
-		auth = privateKeyFile(sshConfig.PrivateKeyFile)
+		auth = loadPrivateKeyFile(sshConfig.PrivateKeyFile)
 	} else {
 		auth = ssh.Password(sshConfig.Secret)
 	}
@@ -141,8 +157,8 @@ func (tunnel *SSHTunnel) forward(localConn net.Conn) {
 	go copyConn(remoteConn, localConn)
 }
 
-// privateKeyFile .
-func privateKeyFile(dir string) ssh.AuthMethod {
+// loadPrivateKeyFile . load privare file by @dir
+func loadPrivateKeyFile(dir string) ssh.AuthMethod {
 	buffer, err := ioutil.ReadFile(dir)
 	if err != nil {
 		return nil
