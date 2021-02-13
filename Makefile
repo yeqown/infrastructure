@@ -1,10 +1,13 @@
-target=$1
+# target=$1
+
+release: build-osx archive
+	echo "release done"
 
 build-osx:
-	GOOS=darwin GOARCH=amd64 go build -o ${target} ./cmd/${target}
-	
-build-win:
-	GOOS=win GOARCH=amd64 go build -o ${target} ./cmd/${target}
+	GOOS=darwin GOARCH=amd64 go build -o package/${target} ./cmd/${target}
 
-build-linux:
-	GOOS=linux GOARCH=amd64 go build -o ${target} ./cmd/${target}
+archive:
+	- mkdir -p package/osx
+	mv package/${target} package/osx/
+	cd package/osx && tar -zcvf ../${target}.tar.gz .
+	# clear

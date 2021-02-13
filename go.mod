@@ -13,7 +13,6 @@ require (
 	github.com/yeqown/log v0.0.0-20200108034421-d68941cd8fd3
 	go.etcd.io/etcd v0.0.0-20181022230727-86b933311d23
 	golang.org/x/crypto v0.0.0-20190605123033-f99c8df09eb5
-	golang.org/x/image v0.0.0-20200119044424-58c23975cae1
 	gopkg.in/go-playground/validator.v8 v8.18.2
 	gopkg.in/go-playground/validator.v9 v9.29.1
 	gopkg.in/mgo.v2 v2.0.0-20180705113604-9856a29383ce

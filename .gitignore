@@ -2,6 +2,7 @@
 .vscode
 vendor
 testdata
+.idea
 
 # Files
 .DS_Store
@@ -9,4 +10,5 @@ types.go
 start-etcd.sh
 sqlite3.db
 app
+package
 .tunnelrc
