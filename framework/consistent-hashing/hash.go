@@ -176,3 +176,32 @@ func (ch *ConsistentHashing) HashKey(key []byte) Node {
 	nodeIdx := ch.ringMapping[ch.ring[idx]]
 	return ch.nodes[nodeIdx]
 }
+
+type builtinNode struct {
+	id       []byte
+	replicas uint8
+}
+
+func (b builtinNode) Identity() []byte { return b.id }
+func (b builtinNode) Replicas() uint8  { return b.replicas }
+
+func NewNode(id []byte, replicas uint8) Node {
+	// empty id is not allowed
+	if len(id) == 0 || allZero(id) {
+		panic("empty id is not allowed")
+	}
+
+	return builtinNode{
+		id:       id,
+		replicas: replicas,
+	}
+}
+
+func allZero(b []byte) bool {
+	for _, v := range b {
+		if v != 0 {
+			return false
+		}
+	}
+	return true
+}
