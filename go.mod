@@ -13,7 +13,7 @@ require (
 	github.com/stretchr/testify v1.8.3
 	github.com/yeqown/log v0.0.0-20200108034421-d68941cd8fd3
 	go.etcd.io/etcd v0.0.0-20181022230727-86b933311d23
-	golang.org/x/crypto v0.17.0
+	golang.org/x/crypto v0.21.0
 	gopkg.in/go-playground/validator.v8 v8.18.2
 	gopkg.in/go-playground/validator.v9 v9.31.0
 	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22
@@ -49,9 +49,9 @@ require (
 	github.com/ugorji/go/codec v1.2.11 // indirect
 	golang.org/x/arch v0.3.0 // indirect
 	golang.org/x/image v0.10.0 // indirect
-	golang.org/x/net v0.10.0 // indirect
-	golang.org/x/sys v0.15.0 // indirect
-	golang.org/x/term v0.15.0 // indirect
+	golang.org/x/net v0.23.0 // indirect
+	golang.org/x/sys v0.18.0 // indirect
+	golang.org/x/term v0.18.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	google.golang.org/appengine v1.4.0 // indirect
 	google.golang.org/protobuf v1.30.0 // indirect
